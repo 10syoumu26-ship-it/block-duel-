@@ -1,10 +1,10 @@
 {
-  "id": "./",
+  "id": "/block-duel-/",
   "name": "BLOCK DUEL — 戦略ジェンガ",
   "short_name": "BLOCK DUEL",
   "description": "倒れないジェンガを戦略で制する対戦ゲーム",
-  "start_url": "./",
-  "scope": "./",
+  "start_url": "/block-duel-/",
+  "scope": "/block-duel-/",
   "display": "standalone",
   "background_color": "#0b1627",
   "theme_color": "#0b1627",
@@ -12,13 +12,13 @@
   "lang": "ja",
   "icons": [
     {
-      "src": "./icons/icon-192.png",
+      "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "./icons/icon-512.png",
+      "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
