@@ -1,0 +1,533 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>BLOCK DUEL</title><meta name="theme-color" content="#0b1627"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="BLOCK DUEL"><link rel="manifest" href="./manifest.webmanifest"><link rel="apple-touch-icon" href="./icons/icon-180.png"><style>
+*{box-sizing:border-box}body{margin:0;background:#0b1627;color:#f5f5f8;font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",sans-serif}main{max-width:650px;margin:auto;padding:18px 12px 40px}h1{margin:0;color:#f3be78;font-size:27px;letter-spacing:.08em}.sub{color:#9faec5;font-size:12px;margin:5px 0 15px}.panel{background:#1b2c43;border:1px solid #38506b;border-radius:16px;padding:15px;margin-bottom:13px}.status,.stats{display:flex;justify-content:space-between;gap:8px}.status strong{display:block;font-size:21px}.status small,.stats small{color:#a9b9ce;font-size:12px}.stage{background:radial-gradient(ellipse at 50% 55%,#2c4961,#16273d 68%,#101c2e);border:1px solid #3b516b;border-radius:20px;padding:10px 6px;min-height:460px;display:flex;flex-direction:column;align-items:center;justify-content:center}svg{width:100%;height:430px;display:block;touch-action:none;-webkit-tap-highlight-color:transparent;overflow:visible}.piece{cursor:pointer}.piece .top{stroke:#8d623f;stroke-width:.65;stroke-linejoin:round}.piece .front{stroke:#785137;stroke-width:.55;stroke-linejoin:round}.piece.legal .top{stroke:#f6d8a2;stroke-width:.9}.piece.legal .front{stroke:#c18d5d;stroke-width:.8}.piece.legal:active{filter:brightness(1.35)}.piece.animating{opacity:.6}.stage{position:relative}.viewtools{display:flex;gap:8px;justify-content:center;margin:4px 0 10px}.viewtools button{background:#304960;color:#fff;border:1px solid #647b92;border-radius:10px;padding:8px 14px;font-size:16px;touch-action:manipulation}.viewtools button:active{background:#53718c}.piece:not(.legal){cursor:default}.note{text-align:center;color:#c4d0de;font-size:13px;margin:2px 0 7px}.stats{justify-content:space-around;text-align:center}.stats strong{font-size:23px;display:block}.actions{display:flex;gap:10px;margin-top:16px}.actions button{flex:1;border:1px solid #58718f;background:#344d69;border-radius:12px;color:#fff;padding:13px 5px;font-size:15px;font-weight:700}.actions button:disabled{opacity:.4}.rules{font-size:13px;color:#bdcde0;line-height:1.8}.last{color:#b9cbe0;font-size:12px;text-align:center;margin-top:11px}.win{color:#ffcf89;font-size:19px;font-weight:bold;text-align:center}@media(max-width:380px){svg{height:400px}.stage{min-height:430px}}
+.setup{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.setup label{font-size:14px;color:#d4e2f3;font-weight:700}.setup select{flex:1;min-width:100px;background:#102239;border:1px solid #6684a2;border-radius:10px;color:white;padding:11px;font-size:16px}.setup button{border:0;border-radius:10px;padding:12px 14px;background:#e8b575;color:#172235;font-weight:800;font-size:14px}.setup .hint{width:100%;color:#9eafc5;font-size:12px}
+.specialPanel{display:none}.specialPanel.on{display:block}.abilities{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}.abilities button{border:1px solid #d1a56b;background:#493b37;color:#ffe6bc;border-radius:10px;padding:10px 12px;font-weight:700}.abilities button:disabled{opacity:.38}.modeHint{font-size:12px;color:#b9cee5;margin-top:7px}.specialInfo{font-size:13px;line-height:1.8;color:#e3d6c7}.piece.mystery .top{fill:#ffd05a!important;stroke:#fff1b0;stroke-width:1.6}.piece.mystery .front{fill:#d99a31!important;stroke:#ffe2a1;stroke-width:1.2}.piece.mystery{filter:drop-shadow(0 0 5px #ffb52a)}.piece.sealed .top{fill:#7185bd!important}.piece.sealed .front{fill:#465c90!important}.piece.target .top{stroke:#ff6e79;stroke-width:2}.abilities button.chosen{background:#9b5b45}.piece text{pointer-events:none;font-size:19px;font-weight:900;fill:#53320c;paint-order:stroke;stroke:#fff3ce;stroke-width:1.5px}.rules b{color:#ffcf89}
+
+/* v14 cinematic layer */
+body{background:radial-gradient(ellipse at 50% 5%,#23354b 0%,#0b1322 58%,#080c14 100%)}
+.stage{overflow:hidden;background:radial-gradient(ellipse at 50% 47%,#334759 0%,#172335 52%,#090f1b 100%);box-shadow:inset 0 0 85px #050913,0 18px 45px #05080f99;transition:background 1s,box-shadow 1s}
+.stage:before{content:'';position:absolute;left:12%;right:12%;top:1%;height:78%;background:radial-gradient(ellipse at 50% 15%,#f6c58d19,transparent 70%);pointer-events:none}
+.stage.endgame{background:radial-gradient(ellipse at 50% 43%,#49302e,#181725 57%,#090b12);box-shadow:inset 0 0 110px #070509,0 0 22px #ba69372a}
+.stage.thinking:after{content:'CPU THINKING';position:absolute;top:15px;right:17px;color:#e7c18b;font-size:10px;letter-spacing:.19em;animation:breathe 1.3s infinite alternate;pointer-events:none}
+@keyframes breathe{from{opacity:.3}to{opacity:1}}
+.piece{transition:filter .12s}.piece.legal:hover{filter:brightness(1.15)}.piece.mystery .top{filter:drop-shadow(0 0 5px #ffc35b)}
+.stage .note{z-index:1}.soundbar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0 0 9px;color:#d7c2a2;font-size:12px}.soundbar button{background:#29394a;color:#f6d6a6;border:1px solid #6b5846;border-radius:9px;padding:7px 11px;font-weight:700}
+.inventory{display:flex;gap:8px;margin-top:11px}.inventory>div{flex:1;min-width:0;border:1px solid #52627a;border-radius:10px;padding:9px;background:#111e30}.inventory small{display:block;color:#aebbd0;font-size:11px}.inventory strong{font-size:12px;color:#ffdcab;line-height:1.8}
+.reveal{position:fixed;inset:0;z-index:50;background:#050914d9;display:none;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(8px)}.reveal.show{display:flex}.revealCard{width:min(340px,94vw);border:1px solid #e9bd72;border-radius:23px;padding:28px 22px;text-align:center;background:radial-gradient(circle at 50% 15%,#524029,#192439 60%,#101723);box-shadow:0 0 80px #d6a05c35;animation:cardIn .38s cubic-bezier(.2,1.5,.3,1)}
+@keyframes cardIn{from{opacity:0;transform:translateY(25px) scale(.8) rotate(-4deg)}to{opacity:1;transform:none}}
+.revealIcon{font-size:54px;margin:12px}.revealTitle{color:#ffe0a2;font-size:26px;font-weight:900;letter-spacing:.08em}.revealDesc{color:#d1d9e4;line-height:1.7;font-size:14px;margin:14px 0 22px}.revealCard button{border:0;border-radius:12px;background:#e9b875;color:#17202b;padding:13px 35px;font-size:16px;font-weight:900;width:100%}
+.flash{position:absolute;inset:0;pointer-events:none;z-index:2;background:radial-gradient(circle,#f8ce8455,transparent 65%);animation:flashOut .6s ease-out forwards}@keyframes flashOut{from{opacity:1}to{opacity:0}}
+@media(prefers-reduced-motion:reduce){.revealCard,.flash,.stage.thinking:after{animation:none}}
+
+/* v17: question mark printed flush on the projected wooden face */
+.piece.mystery{filter:none}
+.piece.mystery .top{fill:#c8a37a!important;stroke:#94704d;stroke-width:.8;filter:none}
+.piece.mystery .front{fill:#a77b57!important;stroke:#896447;stroke-width:.7}
+.piece.mystery.legal .top{stroke:#c9a983;stroke-width:.9}
+.piece.mystery.legal .front{stroke:#a47c5c;stroke-width:.8}
+.piece text.mystery-mark{font-family:Georgia,serif;font-size:18px;font-weight:800;fill:#3f291a;stroke:none;paint-order:normal;opacity:.9;pointer-events:none}
+
+/* v20: restrained premium mystery effects */
+.piece.mystery .top{fill:#cba47a!important;stroke:#b28a60!important}
+.piece.mystery .front{fill:#aa7c56!important;stroke:#916543!important}
+.piece.mystery{filter:drop-shadow(0 0 1.8px rgba(244,190,102,.32));animation:mysteryBreath 3.8s ease-in-out infinite}
+.piece.mystery.animating{animation:none;filter:drop-shadow(0 0 5px rgba(255,201,108,.65))}
+.piece.mystery .mystery-mark{fill:#3f291a;stroke:none;filter:drop-shadow(0 0 .65px rgba(255,210,137,.45))}
+@keyframes mysteryBreath{0%,100%{filter:drop-shadow(0 0 1px rgba(244,190,102,.12))}50%{filter:drop-shadow(0 0 3.4px rgba(244,190,102,.5))}}
+.stage{overflow:hidden}
+.stage.mystery-pull:before{content:'';position:absolute;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse at center,rgba(236,183,97,.13),transparent 62%);animation:mysteryAura 1.05s ease-in-out forwards}
+@keyframes mysteryAura{0%{opacity:0}35%{opacity:1}100%{opacity:0}}
+.mystery-particle{position:absolute;z-index:6;left:50%;top:49%;width:4px;height:4px;border-radius:50%;pointer-events:none;background:#f4d09a;box-shadow:0 0 8px #ffc778;animation:sparkFly .95s ease-out forwards}
+@keyframes sparkFly{0%{opacity:0;transform:translate(0,0) scale(.2)}15%{opacity:1}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.4)}}
+.revealCard{perspective:800px;transform-origin:center;animation:cardFlip .68s cubic-bezier(.2,.85,.24,1) both}
+@keyframes cardFlip{0%{opacity:0;transform:perspective(800px) rotateY(-90deg) scale(.83)}65%{opacity:1;transform:perspective(800px) rotateY(9deg) scale(1.03)}100%{transform:perspective(800px) rotateY(0) scale(1)}}
+.revealCard .revealIcon{filter:drop-shadow(0 0 12px rgba(255,200,112,.38))}
+.revealHint{font-size:11px;color:#b9a992;margin-top:12px}
+.seal-glyph{font-size:12px;fill:#e1d5f7;stroke:#344c81;stroke-width:.6px;paint-order:stroke;pointer-events:none}
+.cap-line{stroke:#eac17e;stroke-width:1.2;stroke-dasharray:5 4;opacity:.8;pointer-events:none}
+.cap-label{fill:#f1d2a3;font-size:9px;letter-spacing:.1em;pointer-events:none}
+.stage.power-double{box-shadow:inset 0 0 0 1px #efbf7560,0 0 20px #f3b75b16}
+.stage.power-seal{box-shadow:inset 0 0 0 1px #a4b9ed66}
+@media(prefers-reduced-motion:reduce){.piece.mystery,.revealCard,.mystery-particle,.stage.mystery-pull:before{animation:none}}
+
+.piece.selected .front,.piece.selected .top{stroke:#ffe3a2!important;stroke-width:2.1;filter:brightness(1.14)}
+.piece.preview .front,.piece.preview .top{stroke:#a7d6ff!important;stroke-width:1.8;filter:brightness(1.12)}
+.piece.preview-center .front,.piece.preview-center .top{stroke:#f9ca78!important;stroke-width:2.3}
+.selectHint{color:#ffe0a4!important}.piece{transition:filter .13s}
+
+/* Ability activation announcement: visible over the tower without obscuring controls. */
+.ability-banner{position:absolute;inset:0;z-index:14;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;visibility:hidden;background:radial-gradient(ellipse at center,rgba(12,17,27,.72),rgba(12,17,27,.18) 62%,transparent 85%);transition:opacity .2s ease,visibility .2s}
+.ability-banner.show{opacity:1;visibility:visible}
+.ability-banner-inner{text-align:center;max-width:90%;padding:22px 24px;border-radius:18px;background:rgba(20,24,32,.88);border:1px solid rgba(245,209,145,.55);box-shadow:0 12px 45px rgba(0,0,0,.46),0 0 32px rgba(230,183,109,.12);transform:scale(.82);transition:transform .24s cubic-bezier(.2,.9,.3,1)}
+.ability-banner.show .ability-banner-inner{transform:scale(1)}
+.ability-banner-actor{font-size:13px;letter-spacing:.13em;color:#e9d3ae;font-weight:700}
+.ability-banner-icon{font-size:clamp(68px,19vw,108px);line-height:1.2;margin:9px 0;filter:drop-shadow(0 0 18px rgba(255,200,112,.35))}
+.ability-banner-title{font-size:clamp(22px,6vw,32px);font-weight:900;color:#ffe3af;letter-spacing:.08em}
+.ability-banner-detail{font-size:13px;line-height:1.6;color:#e9e1d3;margin-top:9px}
+@media(prefers-reduced-motion:reduce){.ability-banner,.ability-banner-inner{transition:none}}
+
+/* v30: outcome cinematic, separate presentation for victory and defeat */
+.result-overlay{position:absolute;inset:0;z-index:19;display:none;align-items:center;justify-content:center;overflow:hidden;pointer-events:none;background:rgba(7,12,23,.72);backdrop-filter:blur(4px)}
+.result-overlay.show{display:flex;animation:resultFade .4s ease-out both}
+.result-overlay.victory{background:radial-gradient(ellipse at 50% 48%,rgba(107,72,29,.65),rgba(8,14,26,.83) 72%)}
+.result-overlay.defeat{background:radial-gradient(ellipse at 50% 50%,rgba(65,35,57,.68),rgba(8,14,26,.87) 72%)}
+.result-content{position:relative;z-index:2;text-align:center;padding:25px 16px;width:96%;animation:resultRise .75s cubic-bezier(.16,1,.3,1) both}
+.result-icon{font-size:clamp(76px,20vw,112px);line-height:1.2;filter:drop-shadow(0 0 24px rgba(255,202,111,.5))}
+.result-overlay.defeat .result-icon{filter:drop-shadow(0 0 22px rgba(175,166,224,.35))}
+.result-title{font-size:clamp(32px,9vw,49px);font-weight:950;letter-spacing:.12em;color:#ffe2a5;text-shadow:0 3px 28px rgba(251,180,80,.55)}
+.result-overlay.defeat .result-title{color:#d8d1f2;text-shadow:0 3px 26px rgba(150,139,210,.4)}
+.result-winner{margin-top:10px;color:#fff2d9;font-size:clamp(16px,4.7vw,23px);font-weight:800}
+.result-sub{margin-top:12px;color:#e0d8c8;font-size:13px;line-height:1.65}
+.result-spark{position:absolute;z-index:1;top:-12%;left:var(--left);width:var(--size);height:var(--size);border-radius:2px;background:var(--spark);opacity:0;animation:resultFall var(--duration) var(--delay) linear infinite;transform:rotate(var(--rotate))}
+.result-overlay.defeat .result-spark{border-radius:50%;filter:blur(1px)}
+@keyframes resultFade{from{opacity:0}to{opacity:1}}
+@keyframes resultRise{from{opacity:0;transform:translateY(30px) scale(.8)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes resultFall{0%{opacity:0;transform:translate3d(0,-20px,0) rotate(0)}12%{opacity:.95}85%{opacity:.85}100%{opacity:0;transform:translate3d(var(--drift),570px,0) rotate(720deg)}}
+@media(prefers-reduced-motion:reduce){.result-overlay.show,.result-content{animation:none}.result-spark{display:none}}
+
+/* v32 audio & haptics preferences */
+.av-settings{margin:0 0 12px;padding:12px 14px;border:1px solid #52657a;border-radius:13px;background:#17273c;color:#e8edf5}
+.av-settings summary{cursor:pointer;font-weight:800;color:#f4ce9a;list-style:none;display:flex;align-items:center;justify-content:space-between;touch-action:manipulation}
+.av-settings summary::-webkit-details-marker{display:none}.av-settings summary:after{content:'⌄';font-size:19px}.av-settings[open] summary:after{content:'⌃'}
+.av-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:13px;font-size:13px}.av-row label{flex:1}.av-row input[type=range]{width:125px;accent-color:#e8b575}.av-row input[type=checkbox]{width:20px;height:20px;accent-color:#e8b575}
+.av-note{font-size:11px;color:#a9bbd0;line-height:1.6;margin:12px 0 0}
+
+/* v36: result backdrop is fully opaque; no tower can show through it. */
+.result-overlay.show{background:#101827!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;animation:resultOpaqueIn .4s ease-out both}
+.result-overlay.show.victory{background:radial-gradient(ellipse at 50% 43%,#594023 0%,#211d22 58%,#101827 100%)!important}
+.result-overlay.show.defeat{background:radial-gradient(ellipse at 50% 43%,#3c2c49 0%,#1b1c30 58%,#101827 100%)!important}
+@keyframes resultOpaqueIn{from{opacity:1}to{opacity:1}}
+.stage.collapse-finished #tower{display:none!important}
+/* v35: prevent any post-collapse SVG reconstruction, including the frame before results */
+.stage.collapse-finished #tower{visibility:hidden!important;opacity:0!important}
+/* v33: deterministic collapse on an intentionally unsafe removal */
+.piece.falling{transform-box:fill-box;transform-origin:center;animation:fallApart 1.45s cubic-bezier(.23,.67,.4,1) forwards!important;pointer-events:none}
+@keyframes fallApart{0%{opacity:1;transform:translate(0,0) rotate(0)}12%{transform:translate(3px,-5px) rotate(-3deg)}100%{opacity:0;transform:translate(var(--fall-x),var(--fall-y)) rotate(var(--fall-rot))}}
+.stage.collapsing{animation:collapseShake .5s ease-in-out 2}
+@keyframes collapseShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+@media(prefers-reduced-motion:reduce){.piece.falling{animation-duration:.15s!important}.stage.collapsing{animation:none}}
+</style></head><body><main><h1>BLOCK DUEL <span style="font-size:11px;letter-spacing:.12em;color:#d3af7d">PWA</span></h1><div class="sub">クラシック／特殊モード｜3D戦略ジェンガ</div><div class="panel setup"><label for="ruleMode">ルール</label><select id="ruleMode"><option value="classic">クラシック（標準）</option><option value="special">特殊モード</option></select><label for="startLayers">開始段数</label><select id="startLayers" aria-label="開始段数"></select><label for="playMode">対戦</label><select id="playMode"><option value="cpu">CPU対戦</option><option value="human">2人対戦</option></select><label for="cpuLevel" id="cpuLabel">CPUの強さ</label><select id="cpuLevel"><option value="easy">やさしい</option><option value="normal" selected>ふつう</option><option value="hard">つよい</option></select><button id="newGame" type="button">新しい対局を開始</button><div class="hint">設定を変えたら「新しい対局を開始」を押してね。CPU対戦ではあなたが先攻です。</div></div><div class="panel specialPanel" id="specialPanel"><b>特殊能力</b><div class="specialInfo" id="specialInfo">「？」の本数は開始段数に応じて変わります</div><div class="abilities"><button id="useSeal" type="button">🔒 封印</button><button id="useDouble" type="button">⚡ 連続</button><button id="useCap" type="button">📏 制限</button><button id="cancelPower" type="button">キャンセル</button></div><div class="modeHint" id="powerHint">能力を選んで使えます。</div><div class="inventory"><div><small>プレイヤー1の能力</small><strong id="inventory1">なし</strong></div><div><small id="invLabel2">CPUの能力</small><strong id="inventory2">なし</strong></div></div></div><div class="panel status"><div><small>現在の手番</small><strong id="turn">プレイヤー1</strong></div><div style="text-align:right"><small>抜いた本数</small><strong id="count">0</strong></div></div><div class="soundbar"><span id="matchModeBadge">✦ CINEMATIC MATCH</span><button id="soundToggle" type="button">🔊 サウンド ON</button></div><details class="av-settings" id="avSettings"><summary>⚙ サウンド・振動設定</summary>
+<div class="av-row"><label for="effectToggle">効果音</label><input type="checkbox" id="effectToggle" checked></div>
+<div class="av-row"><label for="effectVolume">効果音の音量 <span id="effectVolumeText">70%</span></label><input type="range" id="effectVolume" min="0" max="100" step="5" value="70"></div>
+<div class="av-row"><label for="vibrationToggle">振動（対応端末のみ）</label><input type="checkbox" id="vibrationToggle" checked></div>
+<p class="av-note" id="vibrationNote">設定はこの端末に保存されます。iPhone SafariではWebページからの振動に対応していないため、振動が動作しない場合があります。</p>
+</details><div class="stage" id="stage"><svg id="tower" viewBox="-155 -405 310 495" preserveAspectRatio="xMidYMid meet" aria-label="交互に90度回転したジェンガタワー"></svg><div class="ability-banner" id="abilityBanner" aria-live="polite" aria-atomic="true"><div class="ability-banner-inner"><div class="ability-banner-actor" id="abilityActor"></div><div class="ability-banner-icon" id="abilityIcon"></div><div class="ability-banner-title" id="abilityTitle"></div><div class="ability-banner-detail" id="abilityDetail"></div></div></div><div class="result-overlay" id="resultOverlay" aria-live="assertive" aria-atomic="true"><div id="resultParticles"></div><div class="result-content"><div class="result-icon" id="resultIcon"></div><div class="result-title" id="resultTitle"></div><div class="result-winner" id="resultWinner"></div><div class="result-sub" id="resultSub"></div></div></div><div class="viewtools"><button id="zoomout" type="button" aria-label="縮小">−</button><button id="viewreset" type="button">視点リセット</button><button id="zoomin" type="button" aria-label="拡大">＋</button></div><p class="note" id="note">ドラッグで回転・2本指で拡大・2回タップで抜く</p></div><div class="panel" style="margin-top:13px"><div class="stats"><div><strong id="floors">6</strong><small>段数</small></div><div><strong id="legal">15</strong><small>抜ける本数</small></div><div><strong id="full">5</strong><small>3本段</small></div><div><strong id="pairs">0</strong><small>2本段</small></div></div><div class="actions"><button id="undo" type="button">↶ 1手戻す</button><button id="reset" type="button">↻ 最初から</button></div><div class="last" id="last">対局開始！</div></div><div class="panel rules"><b>ルール</b><div>各段は3本。最上段からは抜けません。3本ある段はどれでも抜けます。中央を抜いて両端だけになった段と、1本だけの段は抜けません。隣接2本の段は外側の1本を抜けます。抜いたブロックは自動的に最上段へ。自分の番に抜けるブロックがなければ負けです。抜けないブロック（最上段・封印を除く）を無理に抜くとタワーが崩壊して即敗北します。</div><div style="margin-top:9px"><b>特殊モード：</b>「？」の本数は2×⌊開始段数÷4⌋本（3段では0本）。封印・連続・制限がランダムに割り当てられています。封印は指定したブロックと実際に接触するブロックを封印し、次の次の自分の手番終了まで有効（合法手がなくなれば解除）。連続は合法手が3本以上あるときのみ発動でき、2本抜き。制限は手番を消費せず発動でき、発動時の高さ＋3段が上限。新しい段を作れない場合は抜いたブロックを場外へ除去。</div></div></main><div class="reveal" id="reveal" role="dialog" aria-modal="true" aria-label="特殊能力を獲得"><div class="revealCard"><div style="font-size:12px;color:#f0c88c;letter-spacing:.22em">MYSTERY BLOCK</div><div class="revealIcon" id="revealIcon">✦</div><div class="revealTitle" id="revealTitle">能力獲得</div><div class="revealDesc" id="revealDesc"></div><button id="revealClose" type="button">対局を続ける →</button><div class="revealHint">画面をタップしてスキップ</div></div></div><script>
+(function(){
+'use strict';
+var NS='http://www.w3.org/2000/svg',svg=document.getElementById('tower'),rows=[],history=[],turn=1,steps=0;
+var angle=Math.PI/4,zoom=1,dragged=false,active={},startTouch=null,locked=false,anim=null,gameToken=0,cpuTimer=null;
+var audioEnabled=true,audioCtx=null,revealOpen=false,pendingReveal=null,revealTimer=null;
+var effectVolume=.7,vibrationEnabled=true;
+function saveAV(){try{localStorage.setItem('blockDuelAV32',JSON.stringify({sound:audioEnabled,volume:Math.round(effectVolume*100),vibration:vibrationEnabled}))}catch(e){}}
+function vibrate(pattern){if(!vibrationEnabled)return;try{if(typeof navigator.vibrate==='function')navigator.vibrate(pattern)}catch(e){}}
+function updateAV(){ $('soundToggle').textContent=audioEnabled?'🔊 サウンド ON':'🔇 サウンド OFF';$('effectToggle').checked=audioEnabled;$('effectVolume').value=Math.round(effectVolume*100);$('effectVolumeText').textContent=Math.round(effectVolume*100)+'%';$('vibrationToggle').checked=vibrationEnabled;}
+try{var storedAV=JSON.parse(localStorage.getItem('blockDuelAV32')||'null');if(storedAV){audioEnabled=storedAV.sound!==false;effectVolume=Math.max(0,Math.min(1,Number(storedAV.volume)/100));if(!Number.isFinite(effectVolume))effectVolume=.7;vibrationEnabled=storedAV.vibration!==false}}catch(e){}
+
+var selectedBlock=null,sealPreview=null,cpuPlan=null;
+var collapsing=false,collapseTimer=null,collapseEnded=false;
+var special=false,mysteries={},powers=[[],[]],seals=[],cap=null,selectSeal=false,doubleLeft=0,notice='',sealId=0;
+function audioInit(){if(!audioEnabled||effectVolume<=0)return null;try{if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();return audioCtx}catch(e){return null}}
+function tone(freq,duration,kind,vol,delay){var c=audioInit();if(!c)return;var t=c.currentTime+(delay||0),o=c.createOscillator(),g=c.createGain();o.type=kind||'sine';o.frequency.setValueAtTime(freq,t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime((vol||.035)*effectVolume,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+duration);o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+duration+.02)}
+function woodSound(){vibrate(16);var c=audioInit();if(!c)return;var len=Math.floor(c.sampleRate*.22),buf=c.createBuffer(1,len,c.sampleRate),a=buf.getChannelData(0);for(var i=0;i<len;i++)a[i]=(Math.random()*2-1)*Math.exp(-i/len*9);var src=c.createBufferSource(),filter=c.createBiquadFilter(),gain=c.createGain();src.buffer=buf;filter.type='bandpass';filter.frequency.value=430;filter.Q.value=.6;gain.gain.value=.18*effectVolume;src.connect(filter);filter.connect(gain);gain.connect(c.destination);src.start();tone(165,.14,'triangle',.025)}
+function mysterySound(){vibrate([25,35,35]);tone(235,.24,'sine',.023);tone(350,.36,'sine',.018,.16);tone(525,.48,'sine',.023,.3)}
+function powerSound(){vibrate([40,35,60]);tone(440,.22,'sine',.04);tone(554,.25,'sine',.04,.1);tone(740,.4,'sine',.04,.21)}
+function sealSound(){vibrate(55);tone(190,.2,'triangle',.055);tone(110,.3,'triangle',.04,.12)}
+function particles(){var stage=$('stage');for(var k=0;k<19;k++){var el=document.createElement('i');el.className='mystery-particle';var a=(k*2.39996),r=32+(k%6)*14;el.style.setProperty('--tx',Math.cos(a)*r+'px');el.style.setProperty('--ty',Math.sin(a)*r*.75+'px');el.style.animationDelay=(k%5)*.028+'s';stage.appendChild(el);(function(node){setTimeout(function(){node.remove()},1200)})(el)}}
+function flash(){var stage=$('stage'),el=document.createElement('div');el.className='flash';stage.appendChild(el);setTimeout(function(){el.remove()},650)}
+function showReveal(kind,player){if(!special)return;var names={seal:'封印',double:'連続',cap:'制限'},icons={seal:'🔒',double:'⚡',cap:'📏'},desc={seal:'ブロックを1本指定し、接触するブロックを一時的に封印する。',double:'合法手が3本以上あるときだけ発動でき、1手番で2本連続して抜き取れる。',cap:'手番を消費せず、現在の段数＋3段を上限にする。超過分は場外へ除去。'};$('revealIcon').textContent=icons[kind];$('revealTitle').textContent=names[kind]+' 獲得！';$('revealDesc').textContent=(isCPU()&&player===2?'CPU':'プレイヤー'+player)+'が特殊能力を獲得。'+desc[kind];$('reveal').classList.add('show');revealOpen=true;powerSound();flash();particles();clearTimeout(revealTimer);revealTimer=setTimeout(closeReveal,2100)}
+function closeReveal(){if(!revealOpen)return;clearTimeout(revealTimer);revealOpen=false;$('reveal').classList.remove('show');scheduleCPU()}
+$('revealClose').addEventListener('click',closeReveal);$('reveal').addEventListener('click',function(e){if(e.target!==$('revealClose'))closeReveal()});
+$('soundToggle').addEventListener('click',function(){audioEnabled=!audioEnabled;updateAV();saveAV();if(audioEnabled)tone(523,.12,'sine',.035)});
+$('effectToggle').addEventListener('change',function(){audioEnabled=this.checked;updateAV();saveAV();if(audioEnabled)tone(523,.12,'sine',.035)});
+$('effectVolume').addEventListener('input',function(){effectVolume=Number(this.value)/100;$('effectVolumeText').textContent=this.value+'%';saveAV()});
+$('effectVolume').addEventListener('change',function(){if(audioEnabled)tone(523,.12,'sine',.035)});
+$('vibrationToggle').addEventListener('change',function(){vibrationEnabled=this.checked;saveAV();if(vibrationEnabled)vibrate(35)});
+updateAV();
+function key(i,j){return i+':'+j}
+function hasSeal(i,j){return seals.some(function(s){return s.targets.indexOf(key(i,j))>=0})}
+function basicAllowed(i,j){if(i===rows.length-1||!rows[i][j])return false;var r=rows[i],n=r[0]+r[1]+r[2];return n===3||(n===2&&((r[0]&&r[1]&&j===0)||(r[1]&&r[2]&&j===2)))}
+function cloneState(){return {rows:rows.map(function(r){return r.slice()}),turn:turn,steps:steps,mysteries:Object.assign({},mysteries),powers:powers.map(function(a){return a.slice()}),seals:seals.map(function(x){return {id:x.id,owner:x.owner,remaining:x.remaining,targets:x.targets.slice()}}),cap:cap,selectSeal:selectSeal,doubleLeft:doubleLeft,notice:notice}}
+function restoreState(s){rows=s.rows;turn=s.turn;steps=s.steps;mysteries=s.mysteries||{};powers=s.powers||[[],[]];seals=s.seals||[];cap=s.cap==null?null:s.cap;selectSeal=!!s.selectSeal;selectedBlock=null;sealPreview=null;cpuPlan=null;doubleLeft=s.doubleLeft||0;notice=s.notice||''}
+function bounds(i,j){var g=.075,l=-1.5+j+g,h=-.5+j-g;return i%2===0?[-1.5+g,1.5-g,l,h,i*.76,i*.76+.68]:[l,h,-1.5+g,1.5-g,i*.76,i*.76+.68]}
+function touches(i,j,k,l){if(i===k)return Math.abs(j-l)<=1;var a=bounds(i,j),b=bounds(k,l),eps=.085;var x=Math.min(a[1],b[1])-Math.max(a[0],b[0]),y=Math.min(a[3],b[3])-Math.max(a[2],b[2]),z=Math.min(a[5],b[5])-Math.max(a[4],b[4]);return (x>0&&y>0&&z>=-eps)||(x>0&&z>0&&y>=-eps)||(y>0&&z>0&&x>=-eps)}
+function sealTargets(i,j){var out=[];for(var k=0;k<rows.length;k++)for(var l=0;l<3;l++)if(rows[k][l]&&touches(i,j,k,l))out.push(key(k,l));return out}
+function clearBlockingSeals(){if(count()===0&&seals.length){seals=[];notice='抜けるブロックがなくなったため封印を解除しました';return true}return false}
+function endOwnTurn(player){seals=seals.filter(function(s){if(s.owner!==player)return true;s.remaining--;return s.remaining>0})}
+function giveMystery(i,j,player){if(!special||!mysteries[key(i,j)])return '';var kind=mysteries[key(i,j)];delete mysteries[key(i,j)];powers[player-1].push(kind);pendingReveal={kind:kind,player:player};return '／ミステリー獲得：'+({seal:'封印',double:'連続',cap:'制限'}[kind])}
+function addTop(){var t=rows[rows.length-1];if(t[0]&&t[1]&&t[2]){if(cap!==null&&rows.length>=cap)return false;rows.push([1,0,0])}else if(!t[0])t[0]=1;else if(!t[1])t[1]=1;else t[2]=1;return true}
+function powerUse(kind){var idx=powers[turn-1].indexOf(kind);if(idx<0||locked||cpuTurn()||!special)return false;powers[turn-1].splice(idx,1);return true}
+function canPlay(){return count()>0||special&&powers[turn-1].includes('seal')&&count()>0}
+
+function $(id){return document.getElementById(id)}
+function allowed(i,j){return basicAllowed(i,j)&&!hasSeal(i,j)}
+function isCPU(){return $('playMode').value==='cpu'}
+function cpuTurn(){return isCPU()&&turn===2}
+function legalMoves(){var moves=[];for(var i=0;i<rows.length;i++)for(var j=0;j<3;j++)if(allowed(i,j))moves.push([i,j]);return moves}
+var memo=new Map();
+var cpuStallCount=0,cpuLastSignature="";
+function stateKey(a,b,p){return a+','+b+','+p}
+function winning(a,b,p){
+var key=stateKey(a,b,p);if(memo.has(key))return memo.get(key);
+if(!a&&!b){memo.set(key,false);return false}
+var add=p===0?1:0,next=(p+1)%3,opts=[];
+if(a){opts.push([a-1+add,b,next],[a-1+add,b+1,next])}
+if(b)opts.push([a+add,b-1,next]);
+var win=opts.some(function(t){return !winning(t[0],t[1],t[2])});
+memo.set(key,win);return win;
+}
+function evaluateMove(i,j){
+var a=0,b=0;for(var k=0;k<rows.length-1;k++){
+var r=rows[k],n=r[0]+r[1]+r[2];if(n===3)a++;if(n===2&&r[1])b++;
+}
+var p=rows[rows.length-1].reduce(function(x,y){return x+y},0)%3;
+var n=rows[i].reduce(function(x,y){return x+y},0),add=p===0?1:0;
+if(n===3){a--;if(j!==1)b++}else b--;
+return !winning(a+add,b,(p+1)%3);
+}
+// Simulate a candidate move without changing the live board.
+function simulatedAfter(i,j){
+ var rr=rows.map(function(r){return r.slice()}), top=rr[rr.length-1];rr[i][j]=0;
+ if(top[0]&&top[1]&&top[2]){if(cap===null||rr.length<cap)rr.push([1,0,0])}
+ else if(!top[0])top[0]=1;else if(!top[1])top[1]=1;else top[2]=1;
+ var n=0;for(var a=0;a<rr.length-1;a++)for(var b=0;b<3;b++){
+ var r=rr[a],sum=r[0]+r[1]+r[2];if(r[b]&&(sum===3||(sum===2&&((r[0]&&r[1]&&b===0)||(r[1]&&r[2]&&b===2))))&&!hasSeal(a,b))n++;
+ }return {rows:rr,count:n};
+}
+function moveScore(i,j){
+ var result=simulatedAfter(i,j),m=key(i,j),myst=!!mysteries[m],sc=0;
+ if(result.count===0)sc+=10000; // leave opponent no move
+ if(myst)sc+=special?({seal:16,double:25,cap:13}[mysteries[m]]||15):0;
+ var after=result.rows[i],left=after[0]+after[1]+after[2];
+ if(left===2&&after[1]===0)sc+=5;
+ sc+=Math.min(8,Math.max(0,9-result.count))*.55;
+ if(cap!==null&&rows.length>=cap)sc+=2;
+ if($('cpuLevel').value==='hard'&&!special&&evaluateMove(i,j))sc+=1500;
+ return sc;
+}
+function cpuDecision(){
+ var choices=legalMoves(),level=$('cpuLevel').value;
+ if(!choices.length)return null;
+ if(level==='easy')return {type:'move',m:choices[Math.floor(Math.random()*choices.length)]};
+ var sorted=choices.map(function(m){return {m:m,score:moveScore(m[0],m[1])}}).sort(function(a,b){return b.score-a.score});
+ var best=sorted[0],opponentHas= powers[0]||[], own=powers[1]||[];
+ if(special&&own.length&&doubleLeft===0){
+  if(own.includes('double')&&choices.length>=3&&doubleLeft===0){
+   // Double is strongest when the next player has few choices or the end is near.
+   if(choices.length<=5||best.score<900&&choices.length<=9&&steps>3)return {type:'double'};
+  }
+  if(own.includes('seal')&&choices.length>1&&doubleLeft===0){
+   var targets=choices.map(function(m){
+    var covered=sealTargets(m[0],m[1]),remaining=choices.filter(function(x){return covered.indexOf(key(x[0],x[1]))<0}).length;
+    return {m:m,remaining:remaining,blocked:choices.length-remaining};
+   }).filter(function(x){return x.remaining>0}).sort(function(a,b){return a.remaining-b.remaining});
+   if(targets.length&&targets[0].blocked>=Math.max(2,Math.ceil(choices.length*.4))&&choices.length<=11)return {type:'seal',m:targets[0].m};
+  }
+  if(own.includes('cap')&&cap===null&&doubleLeft===0){
+   // Restrict future moves when tower is close to creating another layer.
+   var top=rows[rows.length-1];if(steps>=4&&(rows.length>=8||top[0]+top[1]+top[2]>=2))return {type:'cap'};
+  }
+ }
+ if(level==='normal'&&Math.random()<.32)return {type:'move',m:choices[Math.floor(Math.random()*choices.length)]};
+ var near=sorted.filter(function(x){return x.score>=best.score-(level==='hard'?1.5:6)});
+ return {type:'move',m:near[Math.floor(Math.random()*near.length)].m};
+}
+function cpuSignature(){return JSON.stringify([rows,turn,steps,powers[1],seals.map(function(s){return [s.id,s.remaining]}),cap,doubleLeft]);}
+var abilityBannerTimer=null,abilityBannerUntil=0;
+function hideAbilityBanner(){clearTimeout(abilityBannerTimer);abilityBannerUntil=0;var el=$('abilityBanner');if(el)el.classList.remove('show')}
+function showAbilityBanner(kind,player,detail){
+ var names={seal:'封印',double:'連続',cap:'制限'},icons={seal:'🔒',double:'⚡',cap:'📏'};
+ $('abilityActor').textContent=(isCPU()&&player===2?'CPU':'プレイヤー'+player)+' が発動！';
+ $('abilityIcon').textContent=icons[kind]||'✦';$('abilityTitle').textContent=names[kind]||'特殊能力';
+ $('abilityDetail').textContent=detail||'';
+ clearTimeout(abilityBannerTimer);var el=$('abilityBanner');el.classList.remove('show');void el.offsetWidth;el.classList.add('show');
+ abilityBannerUntil=Date.now()+1900;
+ abilityBannerTimer=setTimeout(function(){el.classList.remove('show');abilityBannerUntil=0},1900);
+}
+var resultShown=false;
+function hideResult(){resultShown=false;var el=$('resultOverlay');el.className='result-overlay';$('resultParticles').replaceChildren()}
+function showResult(){
+ if(resultShown||collapsing)return;
+ resultShown=true;hideAbilityBanner();
+ var winner=3-turn,againstCPU=isCPU(),humanWon=winner===1;
+ var victory=!againstCPU||humanWon;vibrate(victory?[50,65,70,65,120]:[110,90,160]);if(victory){tone(523,.2,'sine',.045);tone(659,.23,'sine',.04,.14);tone(784,.38,'sine',.045,.3)}else{tone(290,.25,'triangle',.045);tone(220,.45,'triangle',.035,.22)}
+ var overlay=$('resultOverlay');overlay.className='result-overlay show '+(victory?'victory':'defeat');
+ $('resultIcon').textContent=victory?'🏆':'💫';
+ $('resultTitle').textContent=victory?'VICTORY':'DEFEAT';
+ $('resultWinner').textContent=againstCPU?(humanWon?'あなたの勝利！':'CPUの勝利'):'プレイヤー'+winner+' の勝利！';
+ $('resultSub').textContent=againstCPU?(humanWon?'見事な一手！ おめでとう！':'次の対局でリベンジしよう'):'勝者：プレイヤー'+winner+' ／ おめでとう！';
+ var holder=$('resultParticles');holder.replaceChildren();
+ for(var k=0;k<(victory?46:24);k++){
+  var bit=document.createElement('span');bit.className='result-spark';
+  bit.style.setProperty('--left',(Math.random()*100).toFixed(2)+'%');
+  bit.style.setProperty('--size',(victory?4+Math.random()*7:2+Math.random()*5).toFixed(1)+'px');
+  bit.style.setProperty('--spark',victory?['#ffd17d','#f5a95e','#fff0c8','#f8e4a4'][k%4]:['#aaa0d3','#7379aa','#b5a9cb'][k%3]);
+  bit.style.setProperty('--duration',(2.5+Math.random()*2.1).toFixed(2)+'s');
+  bit.style.setProperty('--delay',(-Math.random()*4).toFixed(2)+'s');
+  bit.style.setProperty('--rotate',(Math.random()*360).toFixed(0)+'deg');
+  bit.style.setProperty('--drift',((Math.random()-.5)*160).toFixed(0)+'px');holder.appendChild(bit);
+ }
+}
+function scheduleCPU(){
+ if(!cpuTurn()||locked||revealOpen)return;
+ clearBlockingSeals();if(count()===0){render('CPUの合法手がなくなりました');return;}
+ clearTimeout(cpuTimer);var token=gameToken;
+ cpuTimer=setTimeout(function(){
+  if(Date.now()<abilityBannerUntil){scheduleCPU();return;}
+  if(token!==gameToken||!cpuTurn()||locked||revealOpen)return;
+  var before=cpuSignature(),choice=cpuDecision(),moves=legalMoves();
+  if(!choice){render('CPUの合法手がありません');return;}
+  // Avoid repeating a non-progressing power decision. A failed power
+  // must fall back to a legal removal rather than rescheduling forever.
+  if(before===cpuLastSignature)cpuStallCount++;else cpuStallCount=0;
+  cpuLastSignature=before;
+  if(cpuStallCount>=2)choice={type:'move',m:moves[0]};
+  if(choice.type==='cap'&&powers[1].includes('cap')&&cap===null)activateCap(true);
+  else if(choice.type==='double'&&powers[1].includes('double')&&count()>=3&&doubleLeft===0)activateDouble(true);
+  else if(choice.type==='seal'&&powers[1].includes('seal')&&choice.m&&rows[choice.m[0]]&&rows[choice.m[0]][choice.m[1]])activateSeal(choice.m[0],choice.m[1],true);
+  else if(choice.type==='move'&&choice.m&&allowed(choice.m[0],choice.m[1]))move(choice.m[0],choice.m[1]);
+  else if(moves.length)move(moves[0][0],moves[0][1]);
+  // After an ability activation, the next CPU callback must observe a
+  // changed state. If not, force a normal move to guarantee progress.
+  if(!locked&&cpuTurn()&&!revealOpen&&before===cpuSignature()){
+   var fallback=legalMoves();if(fallback.length)move(fallback[0][0],fallback[0][1]);
+  }
+ },Math.max(560,abilityBannerUntil-Date.now()+70));
+}
+function count(){var n=0;for(var i=0;i<rows.length;i++)for(var j=0;j<3;j++)if(allowed(i,j))n++;return n}
+function project(x,y,z){
+var u=x*Math.cos(angle)-y*Math.sin(angle),v=x*Math.sin(angle)+y*Math.cos(angle);
+return [zoom*35*u,zoom*(14*v-25*z)];
+}
+function polygon(parent,pts,cls,fill){var e=document.createElementNS(NS,'polygon');e.setAttribute('points',pts.map(function(p){var q=project(p[0],p[1],p[2]);return q[0].toFixed(2)+','+q[1].toFixed(2)}).join(' '));e.setAttribute('class',cls);e.setAttribute('fill',fill);parent.appendChild(e)}
+function block(i,j,offset,ghost){
+var alongX=i%2===0,gap=.075,lo=-1.5+j+gap,hi=-.5+j-gap;
+var x0=alongX?-1.5+gap:lo,x1=alongX?1.5-gap:hi,y0=alongX?lo:-1.5+gap,y1=alongX?hi:1.5-gap;
+var z0=i*.76,z1=z0+.68;
+var off=offset||[0,0,0];
+function P(x,y,z){return [x+off[0],y+off[1],z+off[2]]}
+var a=P(x0,y0,z1),b=P(x1,y0,z1),c=P(x1,y1,z1),d=P(x0,y1,z1);
+var A=P(x0,y0,z0),B=P(x1,y0,z0),C=P(x1,y1,z0),D=P(x0,y1,z0);
+var group=document.createElementNS(NS,'g'),isMystery=!!mysteries[key(i,j)],isSealed=hasSeal(i,j),ok=(selectSeal?rows[i][j]===1:(i<rows.length-1&&!isSealed))&&!locked&&!ghost&&!cpuTurn();
+var isSelected=selectedBlock&&selectedBlock.i===i&&selectedBlock.j===j;
+var isPreview=sealPreview&&sealPreview.targets.indexOf(key(i,j))>=0;
+var isPreviewCenter=sealPreview&&sealPreview.i===i&&sealPreview.j===j;
+group.setAttribute('class','piece'+(ok?' legal':'')+(ghost?' animating':'')+(isMystery?' mystery':'')+(isSealed?' sealed':'')+(selectSeal&&ok?' target':'')+(isSelected?' selected':'')+(isPreview?' preview':'')+(isPreviewCenter?' preview-center':''));
+group.setAttribute('aria-label',(i+1)+'段目 '+['左','中央','右'][j]);group.setAttribute('data-block',key(i,j));
+if(ok){group.setAttribute('role','button');group.addEventListener('click',function(){
+ if(dragged)return;
+ if(selectSeal){if(selectedBlock&&selectedBlock.i===i&&selectedBlock.j===j){selectedBlock=null;sealPreview=null;activateSeal(i,j,false)}else{sealPreview={i:i,j:j,targets:sealTargets(i,j)};selectedBlock={i:i,j:j};render('封印範囲を確認して、同じブロックをもう一度タップ')}return}
+ if(selectedBlock&&selectedBlock.i===i&&selectedBlock.j===j){selectedBlock=null;if(allowed(i,j))move(i,j);else collapseMove(i,j)}
+ else{selectedBlock={i:i,j:j};render('選択中：'+(i+1)+'段目 '+['左','中央','右'][j]+'。もう一度タップで抜く')}
+ });
+ if(selectSeal){group.addEventListener('pointerenter',function(e){if(e.pointerType==='mouse'){sealPreview={i:i,j:j,targets:sealTargets(i,j)};render()}})}
+}
+var faces=[
+{pts:[a,b,B,A],normal:[0,-1,0],fill:'#b88051'},
+{pts:[b,c,C,B],normal:[1,0,0],fill:'#9d6842'},
+{pts:[c,d,D,C],normal:[0,1,0],fill:'#b47b4b'},
+{pts:[d,a,A,D],normal:[-1,0,0],fill:'#a87148'}
+];
+var bestFace=null,bestFacing=-1;
+faces.forEach(function(f){
+ var facing=f.normal[0]*Math.sin(angle)+f.normal[1]*Math.cos(angle);
+ if(facing>0.001){
+  polygon(group,f.pts,'front',f.fill);
+  if(facing>bestFacing){bestFacing=facing;bestFace=f}
+ }
+});
+polygon(group,[a,b,c,d],'top',ghost?'#ffe2b7':isSealed?'#7185bd':ok?'#e8bd88':'#d6af81');
+// Project the printed mark with the same affine geometry as the visible wooden face.
+// Local X follows the face's upper edge; local Y follows the face downwards.
+if(isMystery&&!ghost&&bestFace){
+ var f=bestFace.pts, p0=project(f[0][0],f[0][1],f[0][2]),
+     p1=project(f[1][0],f[1][1],f[1][2]),
+     p3=project(f[3][0],f[3][1],f[3][2]);
+ var dx=p1[0]-p0[0],dy=p1[1]-p0[1],vx=p3[0]-p0[0],vy=p3[1]-p0[1];
+ var width=Math.hypot(dx,dy),height=Math.hypot(vx,vy);
+ if(width>7&&height>5){
+  var cx=(p0[0]+p1[0]+p3[0]+project(f[2][0],f[2][1],f[2][2])[0])/4;
+  var cy=(p0[1]+p1[1]+p3[1]+project(f[2][0],f[2][1],f[2][2])[1])/4;
+  // Keep the entire glyph within the visible face, even while rotating.
+  var xScale=Math.min(.92,width/17),yScale=Math.min(.95,height/17);
+  // Keep the printed glyph readable: a negative screen-space X axis
+  // mirrors text on the opposite face of the rotating tower.
+  if(dx<0){dx=-dx;dy=-dy}
+  var label=document.createElementNS(NS,'text');
+  label.setAttribute('x','0');label.setAttribute('y','0');
+  label.setAttribute('text-anchor','middle');
+  label.setAttribute('dominant-baseline','central');
+  label.setAttribute('class','mystery-mark');
+  label.setAttribute('transform','matrix('+[dx/width*xScale,dy/width*xScale,vx/height*yScale,vy/height*yScale,cx,cy].map(function(v){return v.toFixed(4)}).join(' ')+')');
+  label.textContent='?';group.appendChild(label);
+ }
+}
+if(isMystery&&!ghost&&!bestFace){
+ var tc=project((x0+x1)/2,(y0+y1)/2,z1+.002);
+ var topMark=document.createElementNS(NS,'text');
+ topMark.setAttribute('x',tc[0]);topMark.setAttribute('y',tc[1]);
+ topMark.setAttribute('text-anchor','middle');topMark.setAttribute('dominant-baseline','middle');
+ topMark.setAttribute('class','mystery-mark');topMark.textContent='?';group.appendChild(topMark);
+}
+if(isSealed&&!ghost){var center=project((x0+x1)/2,(y0+y1)/2,z1+.008);var lock=document.createElementNS(NS,'text');lock.setAttribute('x',center[0]);lock.setAttribute('y',center[1]);lock.setAttribute('text-anchor','middle');lock.setAttribute('class','seal-glyph');lock.textContent='◆';group.appendChild(lock)}
+svg.appendChild(group);
+}
+function render(msg){
+clearBlockingSeals();if(!collapseEnded){while(svg.firstChild)svg.removeChild(svg.firstChild);
+var order=[];
+for(var i=0;i<rows.length;i++)for(var j=0;j<3;j++)if(rows[i][j]){
+var alongX=i%2===0,x=alongX?0:j-1,y=alongX?j-1:0;
+order.push({i:i,j:j,depth:x*Math.sin(angle)+y*Math.cos(angle)});
+}
+order.sort(function(a,b){return a.i-b.i||a.depth-b.depth});
+order.forEach(function(b){if(anim&&anim.i===b.i&&anim.j===b.j)return;block(b.i,b.j)});
+if(anim)block(anim.i,anim.j,anim.offset,true);
+}
+if(!collapseEnded&&cap!==null&&cap>0){var y=project(0,0,(cap-1)*.76+.78)[1],line=document.createElementNS(NS,'line');line.setAttribute('x1',-105*zoom);line.setAttribute('x2',105*zoom);line.setAttribute('y1',y);line.setAttribute('y2',y);line.setAttribute('class','cap-line');svg.appendChild(line);var label=document.createElementNS(NS,'text');label.setAttribute('x',0);label.setAttribute('y',y-7);label.setAttribute('text-anchor','middle');label.setAttribute('class','cap-label');label.textContent='HEIGHT LIMIT';svg.appendChild(label)}
+$('stage').classList.toggle('power-double',doubleLeft>0);$('stage').classList.toggle('power-seal',selectSeal);
+clearBlockingSeals();var n=count();
+$('specialPanel').classList.toggle('on',special);$('matchModeBadge').textContent=special?'✦ SPECIAL MATCH · ？ '+Object.keys(mysteries).length+'本':'✦ CLASSIC MATCH';
+var inventory=powers[turn-1]||[];
+$('inventory1').textContent=powers[0].map(function(p){return {seal:'🔒封印',double:'⚡連続',cap:'📏制限'}[p]}).join(' ・ ')||'なし';$('inventory2').textContent=powers[1].map(function(p){return {seal:'🔒封印',double:'⚡連続',cap:'📏制限'}[p]}).join(' ・ ')||'なし';$('invLabel2').textContent=isCPU()?'CPUの能力':'プレイヤー2の能力';$('stage').classList.toggle('endgame',n<=4&&steps>2);$('stage').classList.toggle('thinking',cpuTurn()&&n>0&&!locked&&!revealOpen);
+$('specialInfo').textContent='？残り'+Object.keys(mysteries).length+'本 ／ あなたの能力：'+(inventory.length?inventory.map(function(p){return {seal:'🔒封印',double:'⚡連続',cap:'📏制限'}[p]}).join(' ・ '):'なし')+' ／ 高さ上限：'+(cap===null?'なし':cap+'段')+' ／ 封印中：'+seals.length+'件';
+['seal','double','cap'].forEach(function(t){var id={seal:'useSeal',double:'useDouble',cap:'useCap'}[t];$(id).disabled=!special||!inventory.includes(t)||locked||cpuTurn()||n===0||(t==='cap'&&cap!==null)||(t==='double'&&n<3)});
+$('cancelPower').style.display=selectSeal?'':'none';
+$('powerHint').textContent=selectSeal?'封印の中心にするブロックをタップしてください（最上段も選択可）':doubleLeft?'連続能力：あと'+doubleLeft+'本抜いてください':'木目色の「？」を抜くと能力獲得（残り'+Object.keys(mysteries).length+'本）。連続は合法手3本以上で使用可';
+$('turn').textContent=n?(cpuTurn()?'CPUの番':(isCPU()?'あなたの番':'プレイヤー'+turn)):'対局終了';$('count').textContent=steps;
+$('floors').textContent=rows.length;$('legal').textContent=n;
+$('full').textContent=rows.slice(0,-1).filter(function(r){return r[0]&&r[1]&&r[2]}).length;
+$('pairs').textContent=rows.slice(0,-1).filter(function(r){return (r[0]&&r[1]&&!r[2])||(!r[0]&&r[1]&&r[2])}).length;
+$('undo').disabled=!history.length||locked;
+$('last').textContent=(msg||notice||'ドラッグで回転')+(special?'｜特殊モード':'｜クラシック');
+$('note').classList.toggle('selectHint',!!selectedBlock);$('note').textContent=collapsing?'タワー崩壊！':locked?'ブロックを移動中…':n?(selectSeal?'封印範囲をプレビュー・再タップで発動':'タップで選択 → 再タップで抜く（危険なブロックは崩壊）'):(isCPU()?(turn===1?'CPUの勝ち！':'あなたの勝ち！'):'プレイヤー'+(3-turn)+'の勝ち！');
+$('note').className=n?'note':'win';if(n===0&&!collapsing)showResult();
+var h=rows.length;
+// Fit the whole tower in the center of the viewport. Zoom changes the tower's
+// scale without moving its midpoint away from the screen center.
+var towerHeight=25*(h-1)*.76+48;
+var viewHeight=Math.max(235, towerHeight+75);
+var top=-zoom*(25*(h-1)*.76)/2-viewHeight/2+9*zoom;
+svg.setAttribute('viewBox','-155 '+top+' 310 '+viewHeight);svg.style.height=Math.max(285,Math.min(510,245+h*15))+'px';
+}
+function finishMove(i,j){
+var previous=turn,bonus=giveMystery(i,j,previous);rows[i][j]=0;var placed=addTop();steps++;locked=false;anim=null;
+if(doubleLeft>0){doubleLeft--;if(doubleLeft>0){clearBlockingSeals();if(count()>0){render('連続：1本目を抜いた'+bonus);if(pendingReveal){var rr=pendingReveal;pendingReveal=null;showReveal(rr.kind,rr.player)}scheduleCPU();return}doubleLeft=0}}
+endOwnTurn(previous);turn=3-turn;clearBlockingSeals();render((isCPU()?(previous===1?'あなた':'CPU'):'プレイヤー'+previous)+'：'+(i+1)+'段目の'+['左','中央','右'][j]+'を抜いた'+(placed?'':'（場外へ除去）')+bonus);if(pendingReveal){var r=pendingReveal;pendingReveal=null;showReveal(r.kind,r.player)}scheduleCPU();
+}
+function activateSeal(i,j,computer){
+if(!special||locked||revealOpen||!rows[i]||!rows[i][j]||(!computer&&cpuTurn()))return;
+if(!computer&&!selectSeal)return;
+if(powers[turn-1].indexOf('seal')<0)return;
+history.push(cloneState());selectedBlock=null;sealPreview=null;powers[turn-1].splice(powers[turn-1].indexOf('seal'),1);
+sealSound();var sealedCount=sealTargets(i,j).length;seals.push({id:++sealId,owner:turn,remaining:3,targets:sealTargets(i,j)});showAbilityBanner('seal',turn,sealedCount+'本を封印');
+var player=turn;selectSeal=false;endOwnTurn(player);turn=3-turn;clearBlockingSeals();render('🔒 '+(computer?'CPU':'プレイヤー'+player)+'が封印を発動');scheduleCPU();
+}
+function activateDouble(computer){if(!special||locked||revealOpen||(!computer&&cpuTurn())||!powers[turn-1].includes('double')||count()<3)return;history.push(cloneState());powers[turn-1].splice(powers[turn-1].indexOf('double'),1);doubleLeft=2;powerSound();showAbilityBanner('double',turn,'この手番で2本抜ける');render('⚡ 連続：2本抜いてください');scheduleCPU()}
+function activateCap(computer){if(!special||locked||revealOpen||(!computer&&cpuTurn())||!powers[turn-1].includes('cap')||cap!==null)return;history.push(cloneState());powers[turn-1].splice(powers[turn-1].indexOf('cap'),1);cap=rows.length+3;sealSound();showAbilityBanner('cap',turn,'タワー上限 '+cap+'段 ／ 手番は継続');render('📏 高さ上限を'+cap+'段に設定（手番は継続）');scheduleCPU()}
+function collapseMove(i,j){
+ if(locked||collapsing||revealOpen||cpuTurn()||!rows[i]||!rows[i][j]||i===rows.length-1||hasSeal(i,j)||allowed(i,j))return;
+ history.push(cloneState());selectedBlock=null;sealPreview=null;clearTimeout(cpuTimer);gameToken++;locked=true;collapsing=true;anim=null;
+ // A collapse is deterministic: the invalid removal loses immediately.
+ // Only the visual falling motion is animated, never the legality decision.
+ rows[i][j]=0;steps++;var loser=turn;
+ var stage=$('stage');stage.classList.remove('collapse-finished');stage.classList.add('collapsing');
+ render('危険なブロックを抜いた！ タワー崩壊');
+ var pieces=Array.from(svg.querySelectorAll('.piece'));
+ pieces.forEach(function(el,index){
+  var id=el.getAttribute('data-block'),parts=id?id.split(':'):['0','0'];
+  var floor=Number(parts[0]),slot=Number(parts[1]);
+  var direction=(slot-1)*36+(Math.random()-.5)*110;
+  var fall=155+floor*8+Math.random()*110;
+  el.style.setProperty('--fall-x',direction+'px');el.style.setProperty('--fall-y',fall+'px');
+  el.style.setProperty('--fall-rot',((Math.random()-.5)*130)+'deg');
+  el.style.animationDelay=(Math.random()*.28).toFixed(2)+'s';
+  el.classList.add('falling');
+ });
+ vibrate([90,55,160]);woodSound();tone(100,.65,'sawtooth',.045);
+ var token=gameToken;
+ collapseTimer=setTimeout(function(){
+  if(token!==gameToken)return;
+  // Permanently hide the SVG BEFORE any game-state update or result rendering.
+  collapseEnded=true;stage.classList.add('collapse-finished');svg.replaceChildren();svg.style.display='none';svg.style.visibility='hidden';svg.style.opacity='0';
+  collapsing=false;locked=false;stage.classList.remove('collapsing');
+  // Existing result UI uses 3-turn as winner; keep the losing player as turn.
+  // Do not modify the game rules: there are no legal actions after collapse.
+  rows=[];rows.push([0,0,0]);turn=loser;render('タワー崩壊！ '+(isCPU()?'あなた':'プレイヤー'+loser)+'の敗北');
+ },1750);
+}
+function move(i,j){
+if(locked||collapsing||revealOpen||!allowed(i,j))return;
+history.push(cloneState());selectedBlock=null;sealPreview=null;cpuPlan=null;
+woodSound();locked=true;var pullingMystery=special&&!!mysteries[key(i,j)];if(pullingMystery){mysterySound();$('stage').classList.remove('mystery-pull');void $('stage').offsetWidth;$('stage').classList.add('mystery-pull');setTimeout(function(){$('stage').classList.remove('mystery-pull')},1250)}
+var alongX=i%2===0,vec=alongX?[1,0,0]:[0,1,0],duration=pullingMystery?1020:680,begin=performance.now(),token=gameToken;
+function frame(now){
+if(token!==gameToken)return;
+var t=Math.min(1,(now-begin)/duration);
+var out=t<.62?(1-Math.pow(1-t/.62,2)):1;
+var dx=vec[0]*2.2*out,dy=vec[1]*2.2*out;
+var lift=t>.62?(t-.62)/.38:0;
+anim={i:i,j:j,offset:[dx*(1-lift),dy*(1-lift),lift*(rows.length-i)*.76]};
+render('ブロックを移動中');
+if(t<1)requestAnimationFrame(frame);else finishMove(i,j);
+}
+requestAnimationFrame(frame);
+}
+function reset(){collapseEnded=false;svg.style.display='';svg.style.visibility='';svg.style.opacity='';collapsing=false;clearTimeout(collapseTimer);$('stage').classList.remove('collapsing','collapse-finished');hideResult();hideAbilityBanner();clearTimeout(revealTimer);closeReveal();pendingReveal=null;gameToken++;clearTimeout(cpuTimer);locked=false;anim=null;rows=[];special=$('ruleMode').value==='special';mysteries={};powers=[[],[]];seals=[];cap=null;selectSeal=false;doubleLeft=0;notice='';selectedBlock=null;sealPreview=null;cpuPlan=null;cpuStallCount=0;cpuLastSignature="";var n=Math.max(3,Math.min(10,Number($('startLayers').value)||6));for(var i=0;i<n;i++)rows.push([1,1,1]);history=[];turn=1;steps=0;
+if(special){
+ // Even number of mystery blocks: 2 * floor(starting layers / 4).
+ // Pick unique blocks from all non-top layers; multiple blocks per layer are allowed.
+ var positions=[];for(var x=0;x<n-1;x++)for(var y=0;y<3;y++)positions.push(key(x,y));
+ for(var z=positions.length-1;z>0;z--){var w=Math.floor(Math.random()*(z+1)),tmp=positions[z];positions[z]=positions[w];positions[w]=tmp}
+ var mysteryCount=2*Math.floor(n/4),kinds=[];
+ // Distribute all three abilities as evenly as possible, then randomize assignments.
+ for(var q=0;q<mysteryCount;q++)kinds.push(['seal','double','cap'][q%3]);
+ for(var z=kinds.length-1;z>0;z--){var w=Math.floor(Math.random()*(z+1)),tmp=kinds[z];kinds[z]=kinds[w];kinds[w]=tmp}
+ for(var q=0;q<mysteryCount;q++)mysteries[positions[q]]=kinds[q];
+}
+render(n+'段・'+(n*3)+'本'+(special?'／ミステリー'+Object.keys(mysteries).length+'本':'')+'で'+(isCPU()?'CPU対戦':'2人対戦')+'を開始！')}
+$('useSeal').addEventListener('click',function(){if(powers[turn-1].includes('seal')&&!cpuTurn()&&!locked){selectSeal=true;selectedBlock=null;sealPreview=null;render('封印するブロックを選択')}});
+$('cancelPower').addEventListener('click',function(){selectSeal=false;selectedBlock=null;sealPreview=null;render('能力の選択をキャンセル')});
+$('useDouble').addEventListener('click',function(){activateDouble(false)});
+$('useCap').addEventListener('click',function(){activateCap(false)});
+$('playMode').addEventListener('change',function(){
+var show=isCPU();$('cpuLevel').style.display=show?'':'none';$('cpuLabel').style.display=show?'':'none';
+});
+$('reset').addEventListener('click',reset);$('newGame').addEventListener('click',reset);$('ruleMode').addEventListener('change',reset);
+$('undo').addEventListener('click',function(){if(locked||!history.length)return;gameToken++;clearTimeout(cpuTimer);
+var s=history.pop();
+if(isCPU()&&s.turn===2&&history.length)s=history.pop();
+collapseEnded=false;svg.style.display='';svg.style.visibility='';svg.style.opacity='';collapsing=false;clearTimeout(collapseTimer);$('stage').classList.remove('collapsing','collapse-finished');hideResult();restoreState(s);render('手を戻しました');scheduleCPU()});
+function zoomTo(z){zoom=Math.max(.7,Math.min(2.6,z));render()}
+$('zoomin').addEventListener('click',function(){zoomTo(zoom*1.2)});
+$('zoomout').addEventListener('click',function(){zoomTo(zoom/1.2)});
+$('viewreset').addEventListener('click',function(){angle=Math.PI/4;zoom=1;render()});
+svg.addEventListener('pointerdown',function(e){
+active[e.pointerId]={x:e.clientX,y:e.clientY};
+if(Object.keys(active).length===1){startTouch={x:e.clientX,y:e.clientY,angle:angle};dragged=false}
+try{svg.setPointerCapture(e.pointerId)}catch(err){}
+});
+var initialPinch=null;
+svg.addEventListener('pointermove',function(e){
+if(!active[e.pointerId])return;
+active[e.pointerId].x=e.clientX;active[e.pointerId].y=e.clientY;
+var keys=Object.keys(active);
+if(keys.length>=2){
+var a=active[keys[0]],b=active[keys[1]],dist=Math.hypot(a.x-b.x,a.y-b.y);
+if(!initialPinch)initialPinch={distance:dist,zoom:zoom};
+dragged=true;zoomTo(initialPinch.zoom*dist/Math.max(10,initialPinch.distance));
+}else if(startTouch){
+var delta=e.clientX-startTouch.x;
+if(Math.abs(delta)>6||Math.abs(e.clientY-startTouch.y)>8)dragged=true;
+if(dragged){selectedBlock=null;sealPreview=null;angle=startTouch.angle+delta*.012;render()}
+}
+});
+function endPointer(e){
+delete active[e.pointerId];initialPinch=null;
+if(!Object.keys(active).length){startTouch=null;setTimeout(function(){dragged=false},70)}
+else{var k=Object.keys(active)[0];startTouch={x:active[k].x,y:active[k].y,angle:angle}}
+}
+svg.addEventListener('pointerup',endPointer);svg.addEventListener('pointercancel',endPointer);
+for(var k=3;k<=10;k++){var option=document.createElement('option');option.value=k;option.textContent=k+'段（'+(k*3)+'本）';if(k===6)option.selected=true;$('startLayers').appendChild(option)}
+$('playMode').dispatchEvent(new Event('change'));
+reset();
+})();
+</script><script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(err => console.warn('Offline unavailable:',err))); }</script></body></html>
