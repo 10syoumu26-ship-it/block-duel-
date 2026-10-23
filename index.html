@@ -112,445 +112,101 @@ body{background:radial-gradient(ellipse at 50% 5%,#23354b 0%,#0b1322 58%,#080c14
 
 /* v40 statistics and achievements */
 .recordPanel{margin-top:13px}.recordPanel summary{cursor:pointer;color:#f4ce9a;font-weight:800}.recordTiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:13px 0}.recordTile{background:#13243a;border:1px solid #415574;border-radius:11px;padding:10px 5px;text-align:center}.recordTile strong{display:block;font-size:22px;color:#ffdda7}.recordTile small{font-size:10px;color:#a9bad0}.recordTitle{font-size:12px;color:#c8d7e7;margin:8px 0}.recordGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.recordLine{background:#102038;padding:9px;border-radius:9px;font-size:12px;line-height:1.6;color:#dce4f1}.recordLine b{color:#f1c88e}.achievementGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}.achievement{border:1px solid #47546b;background:#16283d;border-radius:10px;padding:9px;font-size:12px;color:#98a8bb}.achievement.unlocked{border-color:#ba9255;color:#ffe0ab;background:#3a332a}.achievement strong{display:block;margin-bottom:4px}.recordActions{display:flex;justify-content:flex-end;margin-top:12px}.recordActions button{border:1px solid #63718a;border-radius:9px;color:#cedcec;background:#23354b;padding:8px 11px;font-size:12px}
-</style></head><body><main><h1>BLOCK DUEL <span style="font-size:11px;letter-spacing:.12em;color:#d3af7d">PWA</span></h1><div class="sub">クラシック／特殊モード｜3D戦略ジェンガ</div><div class="panel setup"><label for="ruleMode">ルール</label><select id="ruleMode"><option value="classic">クラシック（標準）</option><option value="special">特殊モード</option></select><label for="startLayers">開始段数</label><select id="startLayers" aria-label="開始段数"></select><label for="playMode">対戦</label><select id="playMode"><option value="cpu">CPU対戦</option><option value="human">2人対戦</option></select><label for="cpuLevel" id="cpuLabel">CPUの強さ</label><select id="cpuLevel"><option value="easy">やさしい</option><option value="normal" selected>ふつう</option><option value="hard">つよい</option></select><button id="newGame" type="button">新しい対局を開始</button><div class="hint">設定を変えたら「新しい対局を開始」を押してね。CPU対戦ではあなたが先攻です。</div></div><div class="panel specialPanel" id="specialPanel"><b>特殊能力</b><div class="specialInfo" id="specialInfo">「？」の本数は開始段数に応じて変わります</div><div class="abilities"><button id="useSeal" type="button">🔒 封印</button><button id="useDouble" type="button">⚡ 連続</button><button id="useCap" type="button">📏 制限</button><button id="cancelPower" type="button">キャンセル</button></div><div class="modeHint" id="powerHint">能力を選んで使えます。</div><div class="inventory"><div><small>プレイヤー1の能力</small><strong id="inventory1">なし</strong></div><div><small id="invLabel2">CPUの能力</small><strong id="inventory2">なし</strong></div></div></div><div class="panel status"><div><small>現在の手番</small><strong id="turn">プレイヤー1</strong></div><div style="text-align:right"><small>抜いた本数</small><strong id="count">0</strong></div></div><div class="soundbar"><span id="matchModeBadge">✦ CINEMATIC MATCH</span><button id="soundToggle" type="button">🔊 サウンド ON</button></div><details class="av-settings" id="avSettings"><summary>⚙ サウンド・振動設定</summary>
+</style></head><body><main><h1>BLOCK DUEL <span style="font-size:11px;letter-spacing:.12em;color:#d3af7d">PWA</span></h1><div class="sub">クラシック／特殊モード｜3D戦略ジェンガ</div><div class="panel setup"><label for="ruleMode">ルール</label><select id="ruleMode"><option value="classic">クラシック（標準）</option><option value="special">特殊モード</option></select><label for="blocksPerLayer">1段の本数</label><select id="blocksPerLayer"><option value="3">3本</option><option value="4">4本</option><option value="5">5本</option></select><label for="startLayers">開始段数</label><select id="startLayers" aria-label="開始段数"></select><label for="playMode">対戦</label><select id="playMode"><option value="cpu">CPU対戦</option><option value="human">2人対戦</option></select><label for="cpuLevel" id="cpuLabel">CPUの強さ</label><select id="cpuLevel"><option value="easy">やさしい</option><option value="normal" selected>ふつう</option><option value="hard">つよい</option></select><button id="newGame" type="button">新しい対局を開始</button><div class="hint">設定を変えたら「新しい対局を開始」を押してね。CPU対戦ではあなたが先攻です。</div></div><div class="panel specialPanel" id="specialPanel"><b>特殊能力</b><div class="specialInfo" id="specialInfo">「？」の本数は開始段数に応じて変わります</div><div class="abilities"><button id="useSeal" type="button">🔒 封印</button><button id="useDouble" type="button">⚡ 連続</button><button id="useCap" type="button">📏 制限</button><button id="cancelPower" type="button">キャンセル</button></div><div class="modeHint" id="powerHint">能力を選んで使えます。</div><div class="inventory"><div><small>プレイヤー1の能力</small><strong id="inventory1">なし</strong></div><div><small id="invLabel2">CPUの能力</small><strong id="inventory2">なし</strong></div></div></div><div class="panel" id="placementPanel" style="display:none;border-color:#d5a268"><b>📦 配置する位置を選ぶ</b><p class="av-note">空いている位置を選択。配置で崩壊する場合もあります。</p><div id="placementButtons" style="display:flex;gap:8px;margin-top:12px"></div></div><div class="panel status"><div><small>現在の手番</small><strong id="turn">プレイヤー1</strong></div><div style="text-align:right"><small>抜いた本数</small><strong id="count">0</strong></div></div><div class="soundbar"><span id="matchModeBadge">✦ CINEMATIC MATCH</span><button id="soundToggle" type="button">🔊 サウンド ON</button></div><details class="av-settings" id="avSettings"><summary>⚙ サウンド・振動設定</summary>
 <div class="av-row"><label for="effectToggle">効果音</label><input type="checkbox" id="effectToggle" checked></div>
 <div class="av-row"><label for="effectVolume">効果音の音量 <span id="effectVolumeText">70%</span></label><input type="range" id="effectVolume" min="0" max="100" step="5" value="70"></div>
 <div class="av-row"><label for="vibrationToggle">振動（対応端末のみ）</label><input type="checkbox" id="vibrationToggle" checked></div>
 <p class="av-note" id="vibrationNote">設定はこの端末に保存されます。iPhone SafariではWebページからの振動に対応していないため、振動が動作しない場合があります。</p>
-</details><div class="stage" id="stage"><svg id="tower" viewBox="-155 -405 310 495" preserveAspectRatio="xMidYMid meet" aria-label="交互に90度回転したジェンガタワー"></svg><div class="ability-banner" id="abilityBanner" aria-live="polite" aria-atomic="true"><div class="ability-banner-inner"><div class="ability-banner-actor" id="abilityActor"></div><div class="ability-banner-icon" id="abilityIcon"></div><div class="ability-banner-title" id="abilityTitle"></div><div class="ability-banner-detail" id="abilityDetail"></div></div></div><div class="result-overlay" id="resultOverlay" aria-live="assertive" aria-atomic="true"><div id="resultParticles"></div><div class="result-content"><div class="result-icon" id="resultIcon"></div><div class="result-title" id="resultTitle"></div><div class="result-winner" id="resultWinner"></div><div class="result-sub" id="resultSub"></div></div></div><div class="viewtools"><button id="zoomout" type="button" aria-label="縮小">−</button><button id="viewreset" type="button">視点リセット</button><button id="zoomin" type="button" aria-label="拡大">＋</button></div><p class="note" id="note">ドラッグで回転・2本指で拡大・2回タップで抜く</p></div><div class="panel" style="margin-top:13px"><div class="stats"><div><strong id="floors">6</strong><small>段数</small></div><div><strong id="legal">15</strong><small>抜ける本数</small></div><div><strong id="full">5</strong><small>3本段</small></div><div><strong id="pairs">0</strong><small>2本段</small></div></div><div class="actions"><button id="undo" type="button">↶ 1手戻す</button><button id="reset" type="button">↻ 最初から</button></div><div class="last" id="last">対局開始！</div></div><details class="panel recordPanel" id="recordPanel"><summary>🏆 戦績・実績を見る</summary><div class="recordTiles"><div class="recordTile"><strong id="recWins">0</strong><small>総勝利数</small></div><div class="recordTile"><strong id="recRate">—</strong><small>CPU勝率</small></div><div class="recordTile"><strong id="recStreak">0</strong><small>最高連勝</small></div></div><div class="recordTitle">モード・難易度別の戦績（勝利 / 対局）</div><div class="recordGrid" id="recordBreakdown"></div><div class="recordTitle" style="margin-top:16px">実績</div><div class="achievementGrid" id="achievementGrid"></div><div class="recordActions"><button type="button" id="clearRecords">戦績を初期化</button></div><p class="av-note">戦績はこの端末のブラウザに保存。CPU対戦のみ勝率の対象です。対局を1手戻した場合は直前の勝敗記録も取り消されます。</p></details><div class="panel rules"><b>ルール</b><div>各段は3本。最上段からは抜けません。3本ある段はどれでも抜けます。中央を抜いて両端だけになった段と、1本だけの段は抜けません。隣接2本の段は外側の1本を抜けます。抜いたブロックは自動的に最上段へ。自分の番に抜けるブロックがなければ負けです。抜けないブロック（最上段・封印を除く）を無理に抜くとタワーが崩壊して即敗北します。</div><div style="margin-top:9px"><b>特殊モード：</b>「？」の本数は2×⌊開始段数÷4⌋本（3段では0本）。封印・連続・制限がランダムに割り当てられています。封印は指定したブロックと実際に接触するブロックを封印し、次の次の自分の手番終了まで有効（合法手がなくなれば解除）。連続は合法手が3本以上あるときのみ発動でき、2本抜き。制限は手番を消費せず発動でき、発動時の高さ＋3段が上限。新しい段を作れない場合は抜いたブロックを場外へ除去。</div></div></main><div class="reveal" id="reveal" role="dialog" aria-modal="true" aria-label="特殊能力を獲得"><div class="revealCard"><div style="font-size:12px;color:#f0c88c;letter-spacing:.22em">MYSTERY BLOCK</div><div class="revealIcon" id="revealIcon">✦</div><div class="revealTitle" id="revealTitle">能力獲得</div><div class="revealDesc" id="revealDesc"></div><button id="revealClose" type="button">対局を続ける →</button><div class="revealHint">画面をタップしてスキップ</div></div></div><script>
-(function(){
-'use strict';
-var NS='http://www.w3.org/2000/svg',svg=document.getElementById('tower'),rows=[],history=[],turn=1,steps=0;
-var angle=Math.PI/4,zoom=1,dragged=false,active={},startTouch=null,locked=false,anim=null,gameToken=0,cpuTimer=null;
-var audioEnabled=true,audioCtx=null,revealOpen=false,pendingReveal=null,revealTimer=null;
-var effectVolume=.7,vibrationEnabled=true;
-function saveAV(){try{localStorage.setItem('blockDuelAV32',JSON.stringify({sound:audioEnabled,volume:Math.round(effectVolume*100),vibration:vibrationEnabled}))}catch(e){}}
-function vibrate(pattern){if(!vibrationEnabled)return;try{if(typeof navigator.vibrate==='function')navigator.vibrate(pattern)}catch(e){}}
-function updateAV(){ $('soundToggle').textContent=audioEnabled?'🔊 サウンド ON':'🔇 サウンド OFF';$('effectToggle').checked=audioEnabled;$('effectVolume').value=Math.round(effectVolume*100);$('effectVolumeText').textContent=Math.round(effectVolume*100)+'%';$('vibrationToggle').checked=vibrationEnabled;}
-try{var storedAV=JSON.parse(localStorage.getItem('blockDuelAV32')||'null');if(storedAV){audioEnabled=storedAV.sound!==false;effectVolume=Math.max(0,Math.min(1,Number(storedAV.volume)/100));if(!Number.isFinite(effectVolume))effectVolume=.7;vibrationEnabled=storedAV.vibration!==false}}catch(e){}
-
-var selectedBlock=null,sealPreview=null,cpuPlan=null;
-var collapsing=false,collapseTimer=null,collapseEnded=false;
-var special=false,mysteries={},powers=[[],[]],seals=[],cap=null,selectSeal=false,doubleLeft=0,notice='',sealId=0;
-function audioInit(){if(!audioEnabled||effectVolume<=0)return null;try{if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume();return audioCtx}catch(e){return null}}
-function tone(freq,duration,kind,vol,delay){var c=audioInit();if(!c)return;var t=c.currentTime+(delay||0),o=c.createOscillator(),g=c.createGain();o.type=kind||'sine';o.frequency.setValueAtTime(freq,t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime((vol||.035)*effectVolume,t+.012);g.gain.exponentialRampToValueAtTime(.0001,t+duration);o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+duration+.02)}
-function woodSound(){vibrate(16);var c=audioInit();if(!c)return;var len=Math.floor(c.sampleRate*.22),buf=c.createBuffer(1,len,c.sampleRate),a=buf.getChannelData(0);for(var i=0;i<len;i++)a[i]=(Math.random()*2-1)*Math.exp(-i/len*9);var src=c.createBufferSource(),filter=c.createBiquadFilter(),gain=c.createGain();src.buffer=buf;filter.type='bandpass';filter.frequency.value=430;filter.Q.value=.6;gain.gain.value=.18*effectVolume;src.connect(filter);filter.connect(gain);gain.connect(c.destination);src.start();tone(165,.14,'triangle',.025)}
-function mysterySound(){vibrate([25,35,35]);tone(235,.24,'sine',.023);tone(350,.36,'sine',.018,.16);tone(525,.48,'sine',.023,.3)}
-function powerSound(){vibrate([40,35,60]);tone(440,.22,'sine',.04);tone(554,.25,'sine',.04,.1);tone(740,.4,'sine',.04,.21)}
-function sealSound(){vibrate(55);tone(190,.2,'triangle',.055);tone(110,.3,'triangle',.04,.12)}
-function particles(){var stage=$('stage');for(var k=0;k<19;k++){var el=document.createElement('i');el.className='mystery-particle';var a=(k*2.39996),r=32+(k%6)*14;el.style.setProperty('--tx',Math.cos(a)*r+'px');el.style.setProperty('--ty',Math.sin(a)*r*.75+'px');el.style.animationDelay=(k%5)*.028+'s';stage.appendChild(el);(function(node){setTimeout(function(){node.remove()},1200)})(el)}}
-function flash(){var stage=$('stage'),el=document.createElement('div');el.className='flash';stage.appendChild(el);setTimeout(function(){el.remove()},650)}
-function showReveal(kind,player){if(!special)return;var names={seal:'封印',double:'連続',cap:'制限'},icons={seal:'🔒',double:'⚡',cap:'📏'},desc={seal:'ブロックを1本指定し、接触するブロックを一時的に封印する。',double:'合法手が3本以上あるときだけ発動でき、1手番で2本連続して抜き取れる。',cap:'手番を消費せず、現在の段数＋3段を上限にする。超過分は場外へ除去。'};$('revealIcon').textContent=icons[kind];$('revealTitle').textContent=names[kind]+' 獲得！';$('revealDesc').textContent=(isCPU()&&player===2?'CPU':'プレイヤー'+player)+'が特殊能力を獲得。'+desc[kind];$('reveal').classList.add('show');revealOpen=true;powerSound();flash();particles();clearTimeout(revealTimer);revealTimer=setTimeout(closeReveal,2100)}
-function closeReveal(){if(!revealOpen)return;clearTimeout(revealTimer);revealOpen=false;$('reveal').classList.remove('show');scheduleCPU()}
-$('revealClose').addEventListener('click',closeReveal);$('reveal').addEventListener('click',function(e){if(e.target!==$('revealClose'))closeReveal()});
-$('soundToggle').addEventListener('click',function(){audioEnabled=!audioEnabled;updateAV();saveAV();if(audioEnabled)tone(523,.12,'sine',.035)});
-$('effectToggle').addEventListener('change',function(){audioEnabled=this.checked;updateAV();saveAV();if(audioEnabled)tone(523,.12,'sine',.035)});
-$('effectVolume').addEventListener('input',function(){effectVolume=Number(this.value)/100;$('effectVolumeText').textContent=this.value+'%';saveAV()});
-$('effectVolume').addEventListener('change',function(){if(audioEnabled)tone(523,.12,'sine',.035)});
-$('vibrationToggle').addEventListener('change',function(){vibrationEnabled=this.checked;saveAV();if(vibrationEnabled)vibrate(35)});
-updateAV();
-function key(i,j){return i+':'+j}
-function hasSeal(i,j){return seals.some(function(s){return s.targets.indexOf(key(i,j))>=0})}
-function basicAllowed(i,j){if(i===rows.length-1||!rows[i][j])return false;var r=rows[i],n=r[0]+r[1]+r[2];return n===3||(n===2&&((r[0]&&r[1]&&j===0)||(r[1]&&r[2]&&j===2)))}
-function cloneState(){return {rows:rows.map(function(r){return r.slice()}),turn:turn,steps:steps,mysteries:Object.assign({},mysteries),powers:powers.map(function(a){return a.slice()}),seals:seals.map(function(x){return {id:x.id,owner:x.owner,remaining:x.remaining,targets:x.targets.slice()}}),cap:cap,selectSeal:selectSeal,doubleLeft:doubleLeft,notice:notice,matchMystery:matchMystery.slice(),matchPowers:matchPowers.slice()}}
-function restoreState(s){rows=s.rows;turn=s.turn;steps=s.steps;mysteries=s.mysteries||{};powers=s.powers||[[],[]];seals=s.seals||[];cap=s.cap==null?null:s.cap;selectSeal=!!s.selectSeal;selectedBlock=null;sealPreview=null;cpuPlan=null;doubleLeft=s.doubleLeft||0;notice=s.notice||'';matchMystery=s.matchMystery||[0,0];matchPowers=s.matchPowers||[0,0]}
-function bounds(i,j){var g=.075,l=-1.5+j+g,h=-.5+j-g;return i%2===0?[-1.5+g,1.5-g,l,h,i*.76,i*.76+.68]:[l,h,-1.5+g,1.5-g,i*.76,i*.76+.68]}
-function touches(i,j,k,l){if(i===k)return Math.abs(j-l)<=1;var a=bounds(i,j),b=bounds(k,l),eps=.085;var x=Math.min(a[1],b[1])-Math.max(a[0],b[0]),y=Math.min(a[3],b[3])-Math.max(a[2],b[2]),z=Math.min(a[5],b[5])-Math.max(a[4],b[4]);return (x>0&&y>0&&z>=-eps)||(x>0&&z>0&&y>=-eps)||(y>0&&z>0&&x>=-eps)}
-function sealTargets(i,j){var out=[];for(var k=0;k<rows.length;k++)for(var l=0;l<3;l++)if(rows[k][l]&&touches(i,j,k,l))out.push(key(k,l));return out}
-function clearBlockingSeals(){if(count()===0&&seals.length){seals=[];notice='抜けるブロックがなくなったため封印を解除しました';return true}return false}
-function endOwnTurn(player){seals=seals.filter(function(s){if(s.owner!==player)return true;s.remaining--;return s.remaining>0})}
-function giveMystery(i,j,player){if(!special||!mysteries[key(i,j)])return '';var kind=mysteries[key(i,j)];delete mysteries[key(i,j)];powers[player-1].push(kind);matchMystery[player-1]++;pendingReveal={kind:kind,player:player};return '／ミステリー獲得：'+({seal:'封印',double:'連続',cap:'制限'}[kind])}
-function addTop(){var t=rows[rows.length-1];if(t[0]&&t[1]&&t[2]){if(cap!==null&&rows.length>=cap)return false;rows.push([1,0,0])}else if(!t[0])t[0]=1;else if(!t[1])t[1]=1;else t[2]=1;return true}
-function powerUse(kind){var idx=powers[turn-1].indexOf(kind);if(idx<0||locked||cpuTurn()||!special)return false;powers[turn-1].splice(idx,1);return true}
-function canPlay(){return count()>0||special&&powers[turn-1].includes('seal')&&count()>0}
-
-function $(id){return document.getElementById(id)}
-function allowed(i,j){return basicAllowed(i,j)&&!hasSeal(i,j)}
-function isCPU(){return $('playMode').value==='cpu'}
-function cpuTurn(){return isCPU()&&turn===2}
-function legalMoves(){var moves=[];for(var i=0;i<rows.length;i++)for(var j=0;j<3;j++)if(allowed(i,j))moves.push([i,j]);return moves}
-var memo=new Map();
-var cpuStallCount=0,cpuLastSignature="";
-function stateKey(a,b,p){return a+','+b+','+p}
-function winning(a,b,p){
-var key=stateKey(a,b,p);if(memo.has(key))return memo.get(key);
-if(!a&&!b){memo.set(key,false);return false}
-var add=p===0?1:0,next=(p+1)%3,opts=[];
-if(a){opts.push([a-1+add,b,next],[a-1+add,b+1,next])}
-if(b)opts.push([a+add,b-1,next]);
-var win=opts.some(function(t){return !winning(t[0],t[1],t[2])});
-memo.set(key,win);return win;
-}
-function evaluateMove(i,j){
-var a=0,b=0;for(var k=0;k<rows.length-1;k++){
-var r=rows[k],n=r[0]+r[1]+r[2];if(n===3)a++;if(n===2&&r[1])b++;
-}
-var p=rows[rows.length-1].reduce(function(x,y){return x+y},0)%3;
-var n=rows[i].reduce(function(x,y){return x+y},0),add=p===0?1:0;
-if(n===3){a--;if(j!==1)b++}else b--;
-return !winning(a+add,b,(p+1)%3);
-}
-// Simulate a candidate move without changing the live board.
-function simulatedAfter(i,j){
- var rr=rows.map(function(r){return r.slice()}), top=rr[rr.length-1];rr[i][j]=0;
- if(top[0]&&top[1]&&top[2]){if(cap===null||rr.length<cap)rr.push([1,0,0])}
- else if(!top[0])top[0]=1;else if(!top[1])top[1]=1;else top[2]=1;
- var n=0;for(var a=0;a<rr.length-1;a++)for(var b=0;b<3;b++){
- var r=rr[a],sum=r[0]+r[1]+r[2];if(r[b]&&(sum===3||(sum===2&&((r[0]&&r[1]&&b===0)||(r[1]&&r[2]&&b===2))))&&!hasSeal(a,b))n++;
- }return {rows:rr,count:n};
-}
-function moveScore(i,j){
- var result=simulatedAfter(i,j),m=key(i,j),myst=!!mysteries[m],sc=0;
- if(result.count===0)sc+=10000; // leave opponent no move
- if(myst)sc+=special?({seal:16,double:25,cap:13}[mysteries[m]]||15):0;
- var after=result.rows[i],left=after[0]+after[1]+after[2];
- if(left===2&&after[1]===0)sc+=5;
- sc+=Math.min(8,Math.max(0,9-result.count))*.55;
- if(cap!==null&&rows.length>=cap)sc+=2;
- if($('cpuLevel').value==='hard'&&!special&&evaluateMove(i,j))sc+=1500;
- return sc;
-}
-// v40: preview candidate boards without touching the live scene or inventory.
-function futureLegal(rr){var out=[];for(var a=0;a<rr.length-1;a++){var r=rr[a],n=r[0]+r[1]+r[2];for(var b=0;b<3;b++)if(r[b]&&(n===3||(n===2&&((r[0]&&r[1]&&b===0)||(r[1]&&r[2]&&b===2))))&&!hasSeal(a,b))out.push([a,b]);}return out;}
-function applyPreview(rr,i,j){var out=rr.map(function(r){return r.slice()});out[i][j]=0;var top=out[out.length-1];if(top[0]&&top[1]&&top[2]){if(cap===null||out.length<cap)out.push([1,0,0]);}else if(!top[0])top[0]=1;else if(!top[1])top[1]=1;else top[2]=1;return out;}
-function depthScore(i,j){var after=applyPreview(rows,i,j),responses=futureLegal(after);if(!responses.length)return 90000;var worst=-1e6;for(var k=0;k<responses.length;k++){var m=responses[k],f=applyPreview(after,m[0],m[1]),n=futureLegal(f).length;var gain=n===0?1300:Math.max(0,7-n)*4;if(mysteries[key(m[0],m[1])])gain+=26;worst=Math.max(worst,gain);}var value=moveScore(i,j)*1.4-worst*.9;if(mysteries[key(i,j)])value+=10;return value;}
-function cpuDecision(){
- var choices=legalMoves(),level=$('cpuLevel').value;
- if(!choices.length)return null;
- if(level==='easy')return {type:'move',m:choices[Math.floor(Math.random()*choices.length)]};
- var sorted=choices.map(function(m){return {m:m,score:level==='hard'?(special?depthScore(m[0],m[1]):(evaluateMove(m[0],m[1])?20000:0)+moveScore(m[0],m[1])):moveScore(m[0],m[1])}}).sort(function(a,b){return b.score-a.score});
- var best=sorted[0],opponentHas= powers[0]||[], own=powers[1]||[];
- if(special&&own.length&&doubleLeft===0){
-  if(own.includes('double')&&choices.length>=3&&doubleLeft===0){
-   // Double is strongest when the next player has few choices or the end is near.
-   if(choices.length<=5||best.score<900&&choices.length<=9&&steps>3)return {type:'double'};
-  }
-  if(own.includes('seal')&&choices.length>1&&doubleLeft===0){
-   var targets=choices.map(function(m){
-    var covered=sealTargets(m[0],m[1]),remaining=choices.filter(function(x){return covered.indexOf(key(x[0],x[1]))<0}).length;
-    return {m:m,remaining:remaining,blocked:choices.length-remaining};
-   }).filter(function(x){return x.remaining>0}).sort(function(a,b){return a.remaining-b.remaining});
-   if(targets.length&&targets[0].blocked>=Math.max(2,Math.ceil(choices.length*.4))&&choices.length<=11)return {type:'seal',m:targets[0].m};
-  }
-  if(own.includes('cap')&&cap===null&&doubleLeft===0){
-   // Restrict future moves when tower is close to creating another layer.
-   var top=rows[rows.length-1];if(steps>=4&&(rows.length>=8||top[0]+top[1]+top[2]>=2))return {type:'cap'};
-  }
- }
- if(level==='normal'&&Math.random()<.32)return {type:'move',m:choices[Math.floor(Math.random()*choices.length)]};
- var near=sorted.filter(function(x){return x.score>=best.score-(level==='hard'?.001:6)});
- return {type:'move',m:near[Math.floor(Math.random()*near.length)].m};
-}
-function cpuSignature(){return JSON.stringify([rows,turn,steps,powers[1],seals.map(function(s){return [s.id,s.remaining]}),cap,doubleLeft]);}
-var abilityBannerTimer=null,abilityBannerUntil=0;
-function hideAbilityBanner(){clearTimeout(abilityBannerTimer);abilityBannerUntil=0;var el=$('abilityBanner');if(el)el.classList.remove('show')}
-function showAbilityBanner(kind,player,detail){
- var names={seal:'封印',double:'連続',cap:'制限'},icons={seal:'🔒',double:'⚡',cap:'📏'};
- $('abilityActor').textContent=(isCPU()&&player===2?'CPU':'プレイヤー'+player)+' が発動！';
- $('abilityIcon').textContent=icons[kind]||'✦';$('abilityTitle').textContent=names[kind]||'特殊能力';
- $('abilityDetail').textContent=detail||'';
- clearTimeout(abilityBannerTimer);var el=$('abilityBanner');el.classList.remove('show');void el.offsetWidth;el.classList.add('show');
- abilityBannerUntil=Date.now()+1900;
- abilityBannerTimer=setTimeout(function(){el.classList.remove('show');abilityBannerUntil=0},1900);
-}
-
-// v40: local, persistent match records. The winner is authoritative game state.
-var RECORD_KEY='blockDuelV40Results',recordDB={matches:[]},matchId=0,matchSaved=false,matchMystery=[0,0],matchPowers=[0,0],matchUnsafe=false;
-var achievements={first:['はじめの勝利','CPUに初勝利'],five:['ベテラン','CPUに5勝'],ten:['戦略家','CPUに10勝'],streak:['連勝王','CPUに3連勝'],hard:['強敵撃破','強いCPUに勝利'],special:['能力使い','特殊モードでCPUに勝利'],mystery:['探検家','1試合でミステリーを2つ獲得'],clean:['慎重派','崩壊せずにCPUに勝利']};
-function readRecords(){try{var db=JSON.parse(localStorage.getItem(RECORD_KEY)||'null');if(db&&Array.isArray(db.matches))recordDB={matches:db.matches.slice(-500)};}catch(e){}}
-function storeRecords(){try{localStorage.setItem(RECORD_KEY,JSON.stringify(recordDB))}catch(e){}}
-function addResult(unsafe){if(matchSaved)return;matchSaved=true;matchUnsafe=!!unsafe;var winner=3-turn,opponent=isCPU(),entry={id:++matchId,mode:special?'special':'classic',level:opponent?$('cpuLevel').value:'human',winner:winner,won:opponent&&winner===1,players:opponent?1:2,mystery:matchMystery.slice(),abilities:matchPowers.slice(),unsafe:!!unsafe,steps:steps,date:Date.now()};recordDB.matches.push(entry);recordDB.matches=recordDB.matches.slice(-500);storeRecords();renderRecords();}
-function revertLastResult(){if(!matchSaved)return;matchSaved=false;var last=recordDB.matches[recordDB.matches.length-1];if(last&&last.id===matchId){recordDB.matches.pop();storeRecords();renderRecords();}}
-function getAchievements(){var m=recordDB.matches.filter(function(x){return x.players===1});var wins=m.filter(function(x){return x.won});var longest=0,run=0;for(var i=0;i<m.length;i++){run=m[i].won?run+1:0;longest=Math.max(longest,run);}return {wins:wins.length,played:m.length,longest:longest,run:run,unlocked:{first:wins.length>=1,five:wins.length>=5,ten:wins.length>=10,streak:longest>=3,hard:wins.some(function(x){return x.level==='hard'}),special:wins.some(function(x){return x.mode==='special'}),mystery:recordDB.matches.some(function(x){return Math.max.apply(Math,x.mystery||[0,0])>=2}),clean:wins.some(function(x){return !x.unsafe})}};}
-function renderRecords(){var summary=getAchievements();$('recWins').textContent=summary.wins;$('recRate').textContent=summary.played?Math.round(summary.wins/summary.played*100)+'%':'—';$('recStreak').textContent=summary.longest;var html='';[['classic','easy','クラシック／やさしい'],['classic','normal','クラシック／ふつう'],['classic','hard','クラシック／つよい'],['special','easy','特殊／やさしい'],['special','normal','特殊／ふつう'],['special','hard','特殊／つよい']].forEach(function(row){var r=recordDB.matches.filter(function(x){return x.players===1&&x.mode===row[0]&&x.level===row[1]});html+='<div class="recordLine">'+row[2]+'<br><b>'+r.filter(function(x){return x.won}).length+' / '+r.length+'</b></div>';});$('recordBreakdown').innerHTML=html;$('achievementGrid').innerHTML=Object.keys(achievements).map(function(k){var a=achievements[k],got=summary.unlocked[k];return '<div class="achievement '+(got?'unlocked':'')+'"><strong>'+(got?'🏅 ':'🔒 ')+a[0]+'</strong>'+a[1]+'</div>';}).join('');}
-readRecords();renderRecords();
-$('clearRecords').addEventListener('click',function(){if(!confirm('すべての戦績・実績を削除しますか？'))return;recordDB={matches:[]};matchSaved=false;storeRecords();renderRecords()});
-
-var resultShown=false;
-function hideResult(){resultShown=false;var el=$('resultOverlay');el.className='result-overlay';$('resultParticles').replaceChildren()}
-function showResult(){
- if(resultShown||collapsing)return;
- resultShown=true;hideAbilityBanner();addResult(collapseEnded);
- var winner=3-turn,againstCPU=isCPU(),humanWon=winner===1;
- var victory=!againstCPU||humanWon;vibrate(victory?[50,65,70,65,120]:[110,90,160]);if(victory){tone(523,.2,'sine',.045);tone(659,.23,'sine',.04,.14);tone(784,.38,'sine',.045,.3)}else{tone(290,.25,'triangle',.045);tone(220,.45,'triangle',.035,.22)}
- var overlay=$('resultOverlay');overlay.className='result-overlay show '+(victory?'victory':'defeat');
- $('resultIcon').textContent=victory?'🏆':'💫';
- $('resultTitle').textContent=victory?'VICTORY':'DEFEAT';
- $('resultWinner').textContent=againstCPU?(humanWon?'あなたの勝利！':'CPUの勝利'):'プレイヤー'+winner+' の勝利！';
- $('resultSub').textContent=againstCPU?(humanWon?'見事な一手！ おめでとう！':'次の対局でリベンジしよう'):'勝者：プレイヤー'+winner+' ／ おめでとう！';
- var holder=$('resultParticles');holder.replaceChildren();
- for(var k=0;k<(victory?46:24);k++){
-  var bit=document.createElement('span');bit.className='result-spark';
-  bit.style.setProperty('--left',(Math.random()*100).toFixed(2)+'%');
-  bit.style.setProperty('--size',(victory?4+Math.random()*7:2+Math.random()*5).toFixed(1)+'px');
-  bit.style.setProperty('--spark',victory?['#ffd17d','#f5a95e','#fff0c8','#f8e4a4'][k%4]:['#aaa0d3','#7379aa','#b5a9cb'][k%3]);
-  bit.style.setProperty('--duration',(2.5+Math.random()*2.1).toFixed(2)+'s');
-  bit.style.setProperty('--delay',(-Math.random()*4).toFixed(2)+'s');
-  bit.style.setProperty('--rotate',(Math.random()*360).toFixed(0)+'deg');
-  bit.style.setProperty('--drift',((Math.random()-.5)*160).toFixed(0)+'px');holder.appendChild(bit);
- }
-}
-function scheduleCPU(){
- if(!cpuTurn()||locked||revealOpen)return;
- clearBlockingSeals();if(count()===0){render('CPUの合法手がなくなりました');return;}
- clearTimeout(cpuTimer);var token=gameToken;
- cpuTimer=setTimeout(function(){
-  if(Date.now()<abilityBannerUntil){scheduleCPU();return;}
-  if(token!==gameToken||!cpuTurn()||locked||revealOpen)return;
-  var before=cpuSignature(),choice=cpuDecision(),moves=legalMoves();
-  if(!choice){render('CPUの合法手がありません');return;}
-  // Avoid repeating a non-progressing power decision. A failed power
-  // must fall back to a legal removal rather than rescheduling forever.
-  if(before===cpuLastSignature)cpuStallCount++;else cpuStallCount=0;
-  cpuLastSignature=before;
-  if(cpuStallCount>=2)choice={type:'move',m:moves[0]};
-  if(choice.type==='cap'&&powers[1].includes('cap')&&cap===null)activateCap(true);
-  else if(choice.type==='double'&&powers[1].includes('double')&&count()>=3&&doubleLeft===0)activateDouble(true);
-  else if(choice.type==='seal'&&powers[1].includes('seal')&&choice.m&&rows[choice.m[0]]&&rows[choice.m[0]][choice.m[1]])activateSeal(choice.m[0],choice.m[1],true);
-  else if(choice.type==='move'&&choice.m&&allowed(choice.m[0],choice.m[1]))move(choice.m[0],choice.m[1]);
-  else if(moves.length)move(moves[0][0],moves[0][1]);
-  // After an ability activation, the next CPU callback must observe a
-  // changed state. If not, force a normal move to guarantee progress.
-  if(!locked&&cpuTurn()&&!revealOpen&&before===cpuSignature()){
-   var fallback=legalMoves();if(fallback.length)move(fallback[0][0],fallback[0][1]);
-  }
- },Math.max(560,abilityBannerUntil-Date.now()+70));
-}
-function count(){var n=0;for(var i=0;i<rows.length;i++)for(var j=0;j<3;j++)if(allowed(i,j))n++;return n}
-function project(x,y,z){
-var u=x*Math.cos(angle)-y*Math.sin(angle),v=x*Math.sin(angle)+y*Math.cos(angle);
-return [zoom*35*u,zoom*(14*v-25*z)];
-}
-function polygon(parent,pts,cls,fill){var e=document.createElementNS(NS,'polygon');e.setAttribute('points',pts.map(function(p){var q=project(p[0],p[1],p[2]);return q[0].toFixed(2)+','+q[1].toFixed(2)}).join(' '));e.setAttribute('class',cls);e.setAttribute('fill',fill);parent.appendChild(e)}
-function block(i,j,offset,ghost){
-var alongX=i%2===0,gap=.075,lo=-1.5+j+gap,hi=-.5+j-gap;
-var x0=alongX?-1.5+gap:lo,x1=alongX?1.5-gap:hi,y0=alongX?lo:-1.5+gap,y1=alongX?hi:1.5-gap;
-var z0=i*.76,z1=z0+.68;
-var off=offset||[0,0,0];
-function P(x,y,z){return [x+off[0],y+off[1],z+off[2]]}
-var a=P(x0,y0,z1),b=P(x1,y0,z1),c=P(x1,y1,z1),d=P(x0,y1,z1);
-var A=P(x0,y0,z0),B=P(x1,y0,z0),C=P(x1,y1,z0),D=P(x0,y1,z0);
-var group=document.createElementNS(NS,'g'),isMystery=!!mysteries[key(i,j)],isSealed=hasSeal(i,j),ok=(selectSeal?rows[i][j]===1:(i<rows.length-1&&!isSealed))&&!locked&&!ghost&&!cpuTurn();
-var isSelected=selectedBlock&&selectedBlock.i===i&&selectedBlock.j===j;
-var isPreview=sealPreview&&sealPreview.targets.indexOf(key(i,j))>=0;
-var isPreviewCenter=sealPreview&&sealPreview.i===i&&sealPreview.j===j;
-group.setAttribute('class','piece'+(ok?' legal':'')+(ghost?' animating':'')+(isMystery?' mystery':'')+(isSealed?' sealed':'')+(selectSeal&&ok?' target':'')+(isSelected?' selected':'')+(isPreview?' preview':'')+(isPreviewCenter?' preview-center':''));
-group.setAttribute('aria-label',(i+1)+'段目 '+['左','中央','右'][j]);group.setAttribute('data-block',key(i,j));
-if(ok){group.setAttribute('role','button');group.addEventListener('click',function(){
- if(dragged)return;
- if(selectSeal){if(selectedBlock&&selectedBlock.i===i&&selectedBlock.j===j){selectedBlock=null;sealPreview=null;activateSeal(i,j,false)}else{sealPreview={i:i,j:j,targets:sealTargets(i,j)};selectedBlock={i:i,j:j};render('封印範囲を確認して、同じブロックをもう一度タップ')}return}
- if(selectedBlock&&selectedBlock.i===i&&selectedBlock.j===j){selectedBlock=null;if(allowed(i,j))move(i,j);else collapseMove(i,j)}
- else{selectedBlock={i:i,j:j};render('選択中：'+(i+1)+'段目 '+['左','中央','右'][j]+'。もう一度タップで抜く')}
- });
- if(selectSeal){group.addEventListener('pointerenter',function(e){if(e.pointerType==='mouse'){sealPreview={i:i,j:j,targets:sealTargets(i,j)};render()}})}
-}
-var faces=[
-{pts:[a,b,B,A],normal:[0,-1,0],fill:'#b88051'},
-{pts:[b,c,C,B],normal:[1,0,0],fill:'#9d6842'},
-{pts:[c,d,D,C],normal:[0,1,0],fill:'#b47b4b'},
-{pts:[d,a,A,D],normal:[-1,0,0],fill:'#a87148'}
-];
-var bestFace=null,bestFacing=-1;
-faces.forEach(function(f){
- var facing=f.normal[0]*Math.sin(angle)+f.normal[1]*Math.cos(angle);
- if(facing>0.001){
-  polygon(group,f.pts,'front',f.fill);
-  if(facing>bestFacing){bestFacing=facing;bestFace=f}
- }
-});
-polygon(group,[a,b,c,d],'top',ghost?'#ffe2b7':isSealed?'#7185bd':ok?'#e8bd88':'#d6af81');
-// Project the printed mark with the same affine geometry as the visible wooden face.
-// Local X follows the face's upper edge; local Y follows the face downwards.
-if(isMystery&&!ghost&&bestFace){
- var f=bestFace.pts, p0=project(f[0][0],f[0][1],f[0][2]),
-     p1=project(f[1][0],f[1][1],f[1][2]),
-     p3=project(f[3][0],f[3][1],f[3][2]);
- var dx=p1[0]-p0[0],dy=p1[1]-p0[1],vx=p3[0]-p0[0],vy=p3[1]-p0[1];
- var width=Math.hypot(dx,dy),height=Math.hypot(vx,vy);
- if(width>7&&height>5){
-  var cx=(p0[0]+p1[0]+p3[0]+project(f[2][0],f[2][1],f[2][2])[0])/4;
-  var cy=(p0[1]+p1[1]+p3[1]+project(f[2][0],f[2][1],f[2][2])[1])/4;
-  // Keep the entire glyph within the visible face, even while rotating.
-  var xScale=Math.min(.92,width/17),yScale=Math.min(.95,height/17);
-  // Keep the printed glyph readable: a negative screen-space X axis
-  // mirrors text on the opposite face of the rotating tower.
-  if(dx<0){dx=-dx;dy=-dy}
-  var label=document.createElementNS(NS,'text');
-  label.setAttribute('x','0');label.setAttribute('y','0');
-  label.setAttribute('text-anchor','middle');
-  label.setAttribute('dominant-baseline','central');
-  label.setAttribute('class','mystery-mark');
-  label.setAttribute('transform','matrix('+[dx/width*xScale,dy/width*xScale,vx/height*yScale,vy/height*yScale,cx,cy].map(function(v){return v.toFixed(4)}).join(' ')+')');
-  label.textContent='?';group.appendChild(label);
- }
-}
-if(isMystery&&!ghost&&!bestFace){
- var tc=project((x0+x1)/2,(y0+y1)/2,z1+.002);
- var topMark=document.createElementNS(NS,'text');
- topMark.setAttribute('x',tc[0]);topMark.setAttribute('y',tc[1]);
- topMark.setAttribute('text-anchor','middle');topMark.setAttribute('dominant-baseline','middle');
- topMark.setAttribute('class','mystery-mark');topMark.textContent='?';group.appendChild(topMark);
-}
-if(isSealed&&!ghost){var center=project((x0+x1)/2,(y0+y1)/2,z1+.008);var lock=document.createElementNS(NS,'text');lock.setAttribute('x',center[0]);lock.setAttribute('y',center[1]);lock.setAttribute('text-anchor','middle');lock.setAttribute('class','seal-glyph');lock.textContent='◆';group.appendChild(lock)}
-svg.appendChild(group);
-}
-function render(msg){
-clearBlockingSeals();if(!collapseEnded){while(svg.firstChild)svg.removeChild(svg.firstChild);
-var order=[];
-for(var i=0;i<rows.length;i++)for(var j=0;j<3;j++)if(rows[i][j]){
-var alongX=i%2===0,x=alongX?0:j-1,y=alongX?j-1:0;
-order.push({i:i,j:j,depth:x*Math.sin(angle)+y*Math.cos(angle)});
-}
-order.sort(function(a,b){return a.i-b.i||a.depth-b.depth});
-order.forEach(function(b){if(anim&&anim.i===b.i&&anim.j===b.j)return;block(b.i,b.j)});
-if(anim)block(anim.i,anim.j,anim.offset,true);
-}
-if(!collapseEnded&&cap!==null&&cap>0){var y=project(0,0,(cap-1)*.76+.78)[1],line=document.createElementNS(NS,'line');line.setAttribute('x1',-105*zoom);line.setAttribute('x2',105*zoom);line.setAttribute('y1',y);line.setAttribute('y2',y);line.setAttribute('class','cap-line');svg.appendChild(line);var label=document.createElementNS(NS,'text');label.setAttribute('x',0);label.setAttribute('y',y-7);label.setAttribute('text-anchor','middle');label.setAttribute('class','cap-label');label.textContent='HEIGHT LIMIT';svg.appendChild(label)}
-$('stage').classList.toggle('power-double',doubleLeft>0);$('stage').classList.toggle('power-seal',selectSeal);
-clearBlockingSeals();var n=count();
-$('specialPanel').classList.toggle('on',special);$('matchModeBadge').textContent=special?'✦ SPECIAL MATCH · ？ '+Object.keys(mysteries).length+'本':'✦ CLASSIC MATCH';
-var inventory=powers[turn-1]||[];
-$('inventory1').textContent=powers[0].map(function(p){return {seal:'🔒封印',double:'⚡連続',cap:'📏制限'}[p]}).join(' ・ ')||'なし';$('inventory2').textContent=powers[1].map(function(p){return {seal:'🔒封印',double:'⚡連続',cap:'📏制限'}[p]}).join(' ・ ')||'なし';$('invLabel2').textContent=isCPU()?'CPUの能力':'プレイヤー2の能力';$('stage').classList.toggle('endgame',n<=4&&steps>2);$('stage').classList.toggle('thinking',cpuTurn()&&n>0&&!locked&&!revealOpen);
-$('specialInfo').textContent='？残り'+Object.keys(mysteries).length+'本 ／ あなたの能力：'+(inventory.length?inventory.map(function(p){return {seal:'🔒封印',double:'⚡連続',cap:'📏制限'}[p]}).join(' ・ '):'なし')+' ／ 高さ上限：'+(cap===null?'なし':cap+'段')+' ／ 封印中：'+seals.length+'件';
-['seal','double','cap'].forEach(function(t){var id={seal:'useSeal',double:'useDouble',cap:'useCap'}[t];$(id).disabled=!special||!inventory.includes(t)||locked||cpuTurn()||n===0||(t==='cap'&&cap!==null)||(t==='double'&&n<3)});
-$('cancelPower').style.display=selectSeal?'':'none';
-$('powerHint').textContent=selectSeal?'封印の中心にするブロックをタップしてください（最上段も選択可）':doubleLeft?'連続能力：あと'+doubleLeft+'本抜いてください':'木目色の「？」を抜くと能力獲得（残り'+Object.keys(mysteries).length+'本）。連続は合法手3本以上で使用可';
-$('turn').textContent=n?(cpuTurn()?'CPUの番':(isCPU()?'あなたの番':'プレイヤー'+turn)):'対局終了';$('count').textContent=steps;
-$('floors').textContent=rows.length;$('legal').textContent=n;
-$('full').textContent=rows.slice(0,-1).filter(function(r){return r[0]&&r[1]&&r[2]}).length;
-$('pairs').textContent=rows.slice(0,-1).filter(function(r){return (r[0]&&r[1]&&!r[2])||(!r[0]&&r[1]&&r[2])}).length;
-$('undo').disabled=!history.length||locked;
-$('last').textContent=(msg||notice||'ドラッグで回転')+(special?'｜特殊モード':'｜クラシック');
-$('note').classList.toggle('selectHint',!!selectedBlock);$('note').textContent=collapsing?'タワー崩壊！':locked?'ブロックを移動中…':n?(selectSeal?'封印範囲をプレビュー・再タップで発動':'タップで選択 → 再タップで抜く（危険なブロックは崩壊）'):(isCPU()?(turn===1?'CPUの勝ち！':'あなたの勝ち！'):'プレイヤー'+(3-turn)+'の勝ち！');
-$('note').className=n?'note':'win';if(n===0&&!collapsing)showResult();
-var h=rows.length;
-// Fit the whole tower in the center of the viewport. Zoom changes the tower's
-// scale without moving its midpoint away from the screen center.
-var towerHeight=25*(h-1)*.76+48;
-var viewHeight=Math.max(235, towerHeight+75);
-var top=-zoom*(25*(h-1)*.76)/2-viewHeight/2+9*zoom;
-svg.setAttribute('viewBox','-155 '+top+' 310 '+viewHeight);svg.style.height=Math.max(285,Math.min(510,245+h*15))+'px';
-}
-function finishMove(i,j){
-var previous=turn,bonus=giveMystery(i,j,previous);rows[i][j]=0;var placed=addTop();steps++;locked=false;anim=null;
-if(doubleLeft>0){doubleLeft--;if(doubleLeft>0){clearBlockingSeals();if(count()>0){render('連続：1本目を抜いた'+bonus);if(pendingReveal){var rr=pendingReveal;pendingReveal=null;showReveal(rr.kind,rr.player)}scheduleCPU();return}doubleLeft=0}}
-endOwnTurn(previous);turn=3-turn;clearBlockingSeals();render((isCPU()?(previous===1?'あなた':'CPU'):'プレイヤー'+previous)+'：'+(i+1)+'段目の'+['左','中央','右'][j]+'を抜いた'+(placed?'':'（場外へ除去）')+bonus);if(pendingReveal){var r=pendingReveal;pendingReveal=null;showReveal(r.kind,r.player)}scheduleCPU();
-}
-function activateSeal(i,j,computer){
-if(!special||locked||revealOpen||!rows[i]||!rows[i][j]||(!computer&&cpuTurn()))return;
-if(!computer&&!selectSeal)return;
-if(powers[turn-1].indexOf('seal')<0)return;
-history.push(cloneState());selectedBlock=null;sealPreview=null;powers[turn-1].splice(powers[turn-1].indexOf('seal'),1);
-matchPowers[turn-1]++;sealSound();var sealedCount=sealTargets(i,j).length;seals.push({id:++sealId,owner:turn,remaining:3,targets:sealTargets(i,j)});showAbilityBanner('seal',turn,sealedCount+'本を封印');
-var player=turn;selectSeal=false;endOwnTurn(player);turn=3-turn;clearBlockingSeals();render('🔒 '+(computer?'CPU':'プレイヤー'+player)+'が封印を発動');scheduleCPU();
-}
-function activateDouble(computer){if(!special||locked||revealOpen||(!computer&&cpuTurn())||!powers[turn-1].includes('double')||count()<3)return;history.push(cloneState());powers[turn-1].splice(powers[turn-1].indexOf('double'),1);doubleLeft=2;matchPowers[turn-1]++;powerSound();showAbilityBanner('double',turn,'この手番で2本抜ける');render('⚡ 連続：2本抜いてください');scheduleCPU()}
-function activateCap(computer){if(!special||locked||revealOpen||(!computer&&cpuTurn())||!powers[turn-1].includes('cap')||cap!==null)return;history.push(cloneState());powers[turn-1].splice(powers[turn-1].indexOf('cap'),1);cap=rows.length+3;matchPowers[turn-1]++;sealSound();showAbilityBanner('cap',turn,'タワー上限 '+cap+'段 ／ 手番は継続');render('📏 高さ上限を'+cap+'段に設定（手番は継続）');scheduleCPU()}
-function collapseMove(i,j){
- if(locked||collapsing||revealOpen||cpuTurn()||!rows[i]||!rows[i][j]||i===rows.length-1||hasSeal(i,j)||allowed(i,j))return;
- history.push(cloneState());selectedBlock=null;sealPreview=null;clearTimeout(cpuTimer);gameToken++;locked=true;collapsing=true;anim=null;
- // A collapse is deterministic: the invalid removal loses immediately.
- // Only the visual falling motion is animated, never the legality decision.
- rows[i][j]=0;steps++;var loser=turn;
- var stage=$('stage');stage.classList.remove('collapse-finished');stage.classList.add('collapsing');
- render('危険なブロックを抜いた！ タワー崩壊');
- var pieces=Array.from(svg.querySelectorAll('.piece'));
- pieces.forEach(function(el,index){
-  var id=el.getAttribute('data-block'),parts=id?id.split(':'):['0','0'];
-  var floor=Number(parts[0]),slot=Number(parts[1]);
-  var direction=(slot-1)*36+(Math.random()-.5)*110;
-  var fall=155+floor*8+Math.random()*110;
-  el.style.setProperty('--fall-x',direction+'px');el.style.setProperty('--fall-y',fall+'px');
-  el.style.setProperty('--fall-rot',((Math.random()-.5)*130)+'deg');
-  el.style.animationDelay=(Math.random()*.28).toFixed(2)+'s';
-  el.classList.add('falling');
- });
- vibrate([90,55,160]);woodSound();tone(100,.65,'sawtooth',.045);
- var token=gameToken;
- collapseTimer=setTimeout(function(){
-  if(token!==gameToken)return;
-  // Permanently hide the SVG BEFORE any game-state update or result rendering.
-  collapseEnded=true;stage.classList.add('collapse-finished');svg.replaceChildren();svg.style.display='none';svg.style.visibility='hidden';svg.style.opacity='0';
-  collapsing=false;locked=false;stage.classList.remove('collapsing');
-  // Existing result UI uses 3-turn as winner; keep the losing player as turn.
-  // Do not modify the game rules: there are no legal actions after collapse.
-  rows=[];rows.push([0,0,0]);turn=loser;render('タワー崩壊！ '+(isCPU()?'あなた':'プレイヤー'+loser)+'の敗北');
- },1750);
-}
-function move(i,j){
-if(locked||collapsing||revealOpen||!allowed(i,j))return;
-history.push(cloneState());selectedBlock=null;sealPreview=null;cpuPlan=null;
-woodSound();locked=true;var pullingMystery=special&&!!mysteries[key(i,j)];if(pullingMystery){mysterySound();$('stage').classList.remove('mystery-pull');void $('stage').offsetWidth;$('stage').classList.add('mystery-pull');setTimeout(function(){$('stage').classList.remove('mystery-pull')},1250)}
-var alongX=i%2===0,vec=alongX?[1,0,0]:[0,1,0],duration=pullingMystery?1020:680,begin=performance.now(),token=gameToken;
-function frame(now){
-if(token!==gameToken)return;
-var t=Math.min(1,(now-begin)/duration);
-var out=t<.62?(1-Math.pow(1-t/.62,2)):1;
-var dx=vec[0]*2.2*out,dy=vec[1]*2.2*out;
-var lift=t>.62?(t-.62)/.38:0;
-anim={i:i,j:j,offset:[dx*(1-lift),dy*(1-lift),lift*(rows.length-i)*.76]};
-render('ブロックを移動中');
-if(t<1)requestAnimationFrame(frame);else finishMove(i,j);
-}
-requestAnimationFrame(frame);
-}
-function reset(){matchSaved=false;matchId=Date.now()+Math.random();matchMystery=[0,0];matchPowers=[0,0];matchUnsafe=false;collapseEnded=false;svg.style.display='';svg.style.visibility='';svg.style.opacity='';collapsing=false;clearTimeout(collapseTimer);$('stage').classList.remove('collapsing','collapse-finished');hideResult();hideAbilityBanner();clearTimeout(revealTimer);closeReveal();pendingReveal=null;gameToken++;clearTimeout(cpuTimer);locked=false;anim=null;rows=[];special=$('ruleMode').value==='special';mysteries={};powers=[[],[]];seals=[];cap=null;selectSeal=false;doubleLeft=0;notice='';selectedBlock=null;sealPreview=null;cpuPlan=null;cpuStallCount=0;cpuLastSignature="";var n=Math.max(3,Math.min(10,Number($('startLayers').value)||6));for(var i=0;i<n;i++)rows.push([1,1,1]);history=[];turn=1;steps=0;
-if(special){
- // Even number of mystery blocks: 2 * floor(starting layers / 4).
- // Pick unique blocks from all non-top layers; multiple blocks per layer are allowed.
- var positions=[];for(var x=0;x<n-1;x++)for(var y=0;y<3;y++)positions.push(key(x,y));
- for(var z=positions.length-1;z>0;z--){var w=Math.floor(Math.random()*(z+1)),tmp=positions[z];positions[z]=positions[w];positions[w]=tmp}
- var mysteryCount=2*Math.floor(n/4),kinds=[];
- // Distribute all three abilities as evenly as possible, then randomize assignments.
- for(var q=0;q<mysteryCount;q++)kinds.push(['seal','double','cap'][q%3]);
- for(var z=kinds.length-1;z>0;z--){var w=Math.floor(Math.random()*(z+1)),tmp=kinds[z];kinds[z]=kinds[w];kinds[w]=tmp}
- for(var q=0;q<mysteryCount;q++)mysteries[positions[q]]=kinds[q];
-}
-render(n+'段・'+(n*3)+'本'+(special?'／ミステリー'+Object.keys(mysteries).length+'本':'')+'で'+(isCPU()?'CPU対戦':'2人対戦')+'を開始！')}
-$('useSeal').addEventListener('click',function(){if(powers[turn-1].includes('seal')&&!cpuTurn()&&!locked){selectSeal=true;selectedBlock=null;sealPreview=null;render('封印するブロックを選択')}});
-$('cancelPower').addEventListener('click',function(){selectSeal=false;selectedBlock=null;sealPreview=null;render('能力の選択をキャンセル')});
-$('useDouble').addEventListener('click',function(){activateDouble(false)});
-$('useCap').addEventListener('click',function(){activateCap(false)});
-$('playMode').addEventListener('change',function(){
-var show=isCPU();$('cpuLevel').style.display=show?'':'none';$('cpuLabel').style.display=show?'':'none';
-});
-$('reset').addEventListener('click',reset);$('newGame').addEventListener('click',reset);$('ruleMode').addEventListener('change',reset);
-$('undo').addEventListener('click',function(){if(locked||!history.length)return;revertLastResult();gameToken++;clearTimeout(cpuTimer);
-var s=history.pop();
-if(isCPU()&&s.turn===2&&history.length)s=history.pop();
-collapseEnded=false;svg.style.display='';svg.style.visibility='';svg.style.opacity='';collapsing=false;clearTimeout(collapseTimer);$('stage').classList.remove('collapsing','collapse-finished');hideResult();restoreState(s);render('手を戻しました');scheduleCPU()});
-function zoomTo(z){zoom=Math.max(.7,Math.min(2.6,z));render()}
-$('zoomin').addEventListener('click',function(){zoomTo(zoom*1.2)});
-$('zoomout').addEventListener('click',function(){zoomTo(zoom/1.2)});
-$('viewreset').addEventListener('click',function(){angle=Math.PI/4;zoom=1;render()});
-svg.addEventListener('pointerdown',function(e){
-active[e.pointerId]={x:e.clientX,y:e.clientY};
-if(Object.keys(active).length===1){startTouch={x:e.clientX,y:e.clientY,angle:angle};dragged=false}
-try{svg.setPointerCapture(e.pointerId)}catch(err){}
-});
-var initialPinch=null;
-svg.addEventListener('pointermove',function(e){
-if(!active[e.pointerId])return;
-active[e.pointerId].x=e.clientX;active[e.pointerId].y=e.clientY;
-var keys=Object.keys(active);
-if(keys.length>=2){
-var a=active[keys[0]],b=active[keys[1]],dist=Math.hypot(a.x-b.x,a.y-b.y);
-if(!initialPinch)initialPinch={distance:dist,zoom:zoom};
-dragged=true;zoomTo(initialPinch.zoom*dist/Math.max(10,initialPinch.distance));
-}else if(startTouch){
-var delta=e.clientX-startTouch.x;
-if(Math.abs(delta)>6||Math.abs(e.clientY-startTouch.y)>8)dragged=true;
-if(dragged){selectedBlock=null;sealPreview=null;angle=startTouch.angle+delta*.012;render()}
-}
-});
-function endPointer(e){
-delete active[e.pointerId];initialPinch=null;
-if(!Object.keys(active).length){startTouch=null;setTimeout(function(){dragged=false},70)}
-else{var k=Object.keys(active)[0];startTouch={x:active[k].x,y:active[k].y,angle:angle}}
-}
-svg.addEventListener('pointerup',endPointer);svg.addEventListener('pointercancel',endPointer);
-for(var k=3;k<=10;k++){var option=document.createElement('option');option.value=k;option.textContent=k+'段（'+(k*3)+'本）';if(k===6)option.selected=true;$('startLayers').appendChild(option)}
-$('playMode').dispatchEvent(new Event('change'));
-reset();
+</details><div class="stage" id="stage"><svg id="tower" viewBox="-155 -405 310 495" preserveAspectRatio="xMidYMid meet" aria-label="交互に90度回転したジェンガタワー"></svg><div class="ability-banner" id="abilityBanner" aria-live="polite" aria-atomic="true"><div class="ability-banner-inner"><div class="ability-banner-actor" id="abilityActor"></div><div class="ability-banner-icon" id="abilityIcon"></div><div class="ability-banner-title" id="abilityTitle"></div><div class="ability-banner-detail" id="abilityDetail"></div></div></div><div class="result-overlay" id="resultOverlay" aria-live="assertive" aria-atomic="true"><div id="resultParticles"></div><div class="result-content"><div class="result-icon" id="resultIcon"></div><div class="result-title" id="resultTitle"></div><div class="result-winner" id="resultWinner"></div><div class="result-sub" id="resultSub"></div></div></div><div class="viewtools"><button id="zoomout" type="button" aria-label="縮小">−</button><button id="viewreset" type="button">視点リセット</button><button id="zoomin" type="button" aria-label="拡大">＋</button></div><p class="note" id="note">ドラッグで回転・2本指で拡大・2回タップで抜く</p></div><div class="panel" style="margin-top:13px"><div class="stats"><div><strong id="floors">6</strong><small>段数</small></div><div><strong id="legal">15</strong><small>抜ける本数</small></div><div><strong id="full">5</strong><small>満杯の段</small></div><div><strong id="pairs">0</strong><small>空きのある段</small></div></div><div class="actions"><button id="undo" type="button">↶ 1手戻す</button><button id="reset" type="button">↻ 最初から</button></div><div class="last" id="last">対局開始！</div></div><details class="panel recordPanel" id="recordPanel"><summary>🏆 戦績・実績を見る</summary><div class="recordTiles"><div class="recordTile"><strong id="recWins">0</strong><small>総勝利数</small></div><div class="recordTile"><strong id="recRate">—</strong><small>CPU勝率</small></div><div class="recordTile"><strong id="recStreak">0</strong><small>最高連勝</small></div></div><div class="recordTitle">モード・難易度別の戦績（勝利 / 対局）</div><div class="recordGrid" id="recordBreakdown"></div><div class="recordTitle" style="margin-top:16px">実績</div><div class="achievementGrid" id="achievementGrid"></div><div class="recordActions"><button type="button" id="clearRecords">戦績を初期化</button></div><p class="av-note">戦績はこの端末のブラウザに保存。CPU対戦のみ勝率の対象です。対局を1手戻した場合は直前の勝敗記録も取り消されます。</p></details><div class="panel rules"><b>共通ルール（重心・支持モデル）</b><div>3・4・5本を選択。全段が揃った状態から開始し、最上段以外のブロックを2回タップして抜く。各段境界の接触と上部重心を判定。安全に抜いたら最上段の空き位置を自由に選んで置く。置いた後も判定し、不安定なら崩壊して敗北。安全な「抜く＋置く」の組み合わせがなければ負け。</div><div style="margin-top:9px"><b>特殊：</b>初期総数15本未満は？2本、15本以上は？4本。封印は選択ブロックと直接接触するブロックを一時的に抜けなくするだけ（支持・重量に影響なし）。連続は安全な抜き取り候補が3本以上で発動できる。制限は手番を消費せず、現在の高さ＋3段を上限に設定。上限到達後は場外に除去する。</div></div></div></main><div class="reveal" id="reveal" role="dialog" aria-modal="true" aria-label="特殊能力を獲得"><div class="revealCard"><div style="font-size:12px;color:#f0c88c;letter-spacing:.22em">MYSTERY BLOCK</div><div class="revealIcon" id="revealIcon">✦</div><div class="revealTitle" id="revealTitle">能力獲得</div><div class="revealDesc" id="revealDesc"></div><button id="revealClose" type="button">対局を続ける →</button><div class="revealHint">画面をタップしてスキップ</div></div></div><script>
+(function(){'use strict';
+const $=id=>document.getElementById(id), NS='http://www.w3.org/2000/svg', svg=$('tower');
+let N=3,rows=[],turn=1,steps=0,stage='choose',pending=null,selected=null,sealMode=false,sealPreview=[],special=false,mysteries={},powers=[[],[]],seals=[],cap=null,doubleRemaining=0,history=[],angle=Math.PI/4,zoom=1,active={},gesture=null,dragged=false,locked=false,token=0,cpuTimer=null,revealTimer=null,abilityTimer=null,gameFinished=false,collapseFinished=false,recorded=false,modeForMatch='cpu',levelForMatch='normal',audioOn=true,volume=.7,vibrationOn=true,context=null,abilitiesUsed=[0,0],mysteriesTaken=[0,0];
+const allNames=['封印','連続','制限'],powerNames={seal:'封印',double:'連続',cap:'制限'},powerIcons={seal:'🔒',double:'⚡',cap:'📏'};
+function key(i,j){return i+':'+j}function bits(r){return r.reduce((a,v)=>a+v,0)}function filled(r){return r.every(Boolean)}function cpu(){return modeForMatch==='cpu'&&turn===2}
+function sound(f=260){if(!audioOn||volume===0)return;try{context=context||new (window.AudioContext||window.webkitAudioContext)();context.resume();const o=context.createOscillator(),g=context.createGain();o.type='triangle';o.frequency.value=f;g.gain.value=.035*volume;g.gain.exponentialRampToValueAtTime(.0001,context.currentTime+.23);o.connect(g);g.connect(context.destination);o.start();o.stop(context.currentTime+.25)}catch(e){}}
+function vibrate(t=25){if(vibrationOn&&navigator.vibrate)navigator.vibrate(t)}
+try{const x=JSON.parse(localStorage.getItem('blockDuelAV32')||'null');if(x){audioOn=x.sound!==false;volume=Math.max(0,Math.min(1,(Number(x.volume)||0)/100));vibrationOn=x.vibration!==false}}catch(e){}
+function saveAV(){try{localStorage.setItem('blockDuelAV32',JSON.stringify({sound:audioOn,volume:Math.round(volume*100),vibration:vibrationOn}))}catch(e){}}
+function updateAV(){$('soundToggle').textContent=audioOn?'🔊 サウンド ON':'🔇 サウンド OFF';$('effectToggle').checked=audioOn;$('effectVolume').value=volume*100;$('effectVolumeText').textContent=Math.round(volume*100)+'%';$('vibrationToggle').checked=vibrationOn}
+$('soundToggle').onclick=()=>{audioOn=!audioOn;saveAV();updateAV();if(audioOn)sound()};$('effectToggle').onchange=e=>{audioOn=e.target.checked;saveAV();updateAV()};$('effectVolume').oninput=e=>{volume=Number(e.target.value)/100;saveAV();updateAV()};$('vibrationToggle').onchange=e=>{vibrationOn=e.target.checked;saveAV();updateAV();vibrate()};updateAV();
+// The same deterministic contact-hull geometry used in the previous model-A analysis.
+// All perpendicular adjacent-layer blocks overlap. On each interface the contact hull
+// is a rectangle: odd-layer occupied-slot extremes in X, even-layer extremes in Y.
+function stable(board){for(let i=1;i<board.length;i++){
+ const a=board[i-1],b=board[i];if(!bits(a)||!bits(b))return false;
+ const odd=(i%2===1?i:i-1),even=i%2===0?i:i-1;
+ const ix=board[odd].flatMap((v,j)=>v?[j]:[]),iy=board[even].flatMap((v,j)=>v?[j]:[]);
+ if(!ix.length||!iy.length)return false;
+ let sx=0,sy=0,num=0;
+ for(let k=i;k<board.length;k++)for(let j=0;j<N;j++)if(board[k][j]){num++;if(k%2)sx+=2*j+1-N;else sy+=2*j+1-N}
+ const minX=2*Math.min(...ix)-N,maxX=2*(Math.max(...ix)+1)-N,minY=2*Math.min(...iy)-N,maxY=2*(Math.max(...iy)+1)-N;
+ if(sx<num*minX||sx>num*maxX||sy<num*minY||sy>num*maxY)return false;
+ }return true;}
+function removeBoard(board,i,j){const x=board.map(r=>r.slice());x[i][j]=0;return x}
+function possiblePlaces(board){const top=board[board.length-1];if(filled(top)){if(cap!==null&&board.length>=cap)return [-1];return Array.from({length:N},(_,j)=>j)}return top.flatMap((v,j)=>v?[]:[j])}
+function addBoard(board,pos){const x=board.map(r=>r.slice());if(pos===-1)return x;if(filled(x[x.length-1]))x.push(Array(N).fill(0));x[x.length-1][pos]=1;return x}
+function blocked(i,j){return seals.some(s=>s.targets.includes(key(i,j)))}
+function touching(i,j,k,l){if(i===k)return Math.abs(j-l)===1;return Math.abs(i-k)===1}
+function sealTargets(i,j){const out=[];for(let k=0;k<rows.length;k++)for(let l=0;l<N;l++)if(rows[k][l]&&(k===i&&l===j||touching(i,j,k,l)))out.push(key(k,l));return out}
+function candidates(){const result=[];for(let i=0;i<rows.length-1;i++)for(let j=0;j<N;j++)if(rows[i][j]&&!blocked(i,j)){
+ const removed=removeBoard(rows,i,j),isSafe=stable(removed),slots=isSafe?possiblePlaces(removed):[];
+ const placements=slots.filter(p=>p===-1||stable(addBoard(removed,p)));
+ if(placements.length)result.push({i,j,placements});
+ }return result}
+function candidateFor(i,j){return candidates().find(c=>c.i===i&&c.j===j)}
+function clearStallingSeals(){// A seal never changes physical support. If all otherwise-safe moves are sealed, lift seals.
+ if(seals.length){const old=seals;seals=[];let n=candidates().length;seals=old;if(n>0&&candidates().length===0){seals=[];return true}}return false}
+function snapshot(){return {rows:rows.map(r=>r.slice()),turn,steps,stage,pending:pending&&{...pending,board:pending.board.map(r=>r.slice())},selected:selected&&{...selected},special,mysteries:{...mysteries},powers:powers.map(a=>a.slice()),seals:seals.map(s=>({...s,targets:s.targets.slice()})),cap,doubleRemaining,abilitiesUsed:abilitiesUsed.slice(),mysteriesTaken:mysteriesTaken.slice(),gameFinished}}
+function restore(s){rows=s.rows.map(r=>r.slice());turn=s.turn;steps=s.steps;stage=s.stage;pending=s.pending;selected=s.selected;special=s.special;mysteries=s.mysteries;powers=s.powers;seals=s.seals;cap=s.cap;doubleRemaining=s.doubleRemaining;abilitiesUsed=s.abilitiesUsed;mysteriesTaken=s.mysteriesTaken;gameFinished=s.gameFinished;sealMode=false;sealPreview=[];collapseFinished=false}
+function recordHistory(){history.push(snapshot());if(history.length>120)history.shift()}
+function saveRecord(unsafe){if(recorded)return;recorded=true;let db=readRecords(),winner=3-turn;db.matches.push({date:Date.now(),mode:special?'special':'classic',level:levelForMatch,players:modeForMatch==='cpu'?1:2,winner,won:winner===1,steps,unsafe,abilities:abilitiesUsed.slice(),mystery:mysteriesTaken.slice()});db.matches=db.matches.slice(-500);writeRecords(db)}
+function readRecords(){try{return JSON.parse(localStorage.getItem('blockDuelRecords40'))||{matches:[]}}catch(e){return{matches:[]}}}
+function writeRecords(db){try{localStorage.setItem('blockDuelRecords40',JSON.stringify(db))}catch(e){}renderRecords()}
+function renderRecords(){const arr=readRecords().matches||[],matches=arr.filter(x=>x.players===1),wins=matches.filter(x=>x.won).length;let streak=0,best=0;matches.forEach(x=>{streak=x.won?streak+1:0;best=Math.max(best,streak)});$('recWins').textContent=wins;$('recRate').textContent=matches.length?Math.round(wins*100/matches.length)+'%':'—';$('recStreak').textContent=best;let html='';for(const m of ['classic','special'])for(const l of ['easy','normal','hard']){const f=matches.filter(x=>x.mode===m&&x.level===l);html+='<div class="recordLine">'+(m==='classic'?'通常':'特殊')+'／'+({easy:'やさしい',normal:'ふつう',hard:'つよい'}[l])+'<br><b>'+f.filter(x=>x.won).length+' / '+f.length+'</b></div>'}$('recordBreakdown').innerHTML=html;const achievements=[['初勝利',wins>=1],['10勝',wins>=10],['5連勝',best>=5],['強敵撃破',matches.some(x=>x.won&&x.level==='hard')],['特殊能力使い',arr.some(x=>x.abilities&&x.abilities[0]>0)] ,['熟練者',matches.length>=30]];$('achievementGrid').innerHTML=achievements.map(([name,ok])=>'<div class="achievement '+(ok?'unlocked':'')+'"><strong>'+(ok?'🏅':'🔒')+' '+name+'</strong></div>').join('')}
+$('clearRecords').onclick=()=>{if(confirm('戦績をすべて削除しますか？'))writeRecords({matches:[]})};renderRecords();
+function result(unsafe=false){if(gameFinished)return;gameFinished=true;stage='ended';clearTimeout(cpuTimer);$('placementPanel').style.display='none';saveRecord(unsafe);const winner=3-turn,humanWin=winner===1,good=modeForMatch!=='cpu'||humanWin;const o=$('resultOverlay');o.className='result-overlay show '+(good?'victory':'defeat');$('resultIcon').textContent=good?'🏆':'💫';$('resultTitle').textContent=good?'VICTORY':'DEFEAT';$('resultWinner').textContent=modeForMatch==='cpu'?(humanWin?'あなたの勝利！':'CPUの勝利！'):'プレイヤー'+winner+'の勝利！';$('resultSub').textContent=unsafe?'危険なブロックでタワーが崩壊':'安全な手がなくなりました';$('resultParticles').replaceChildren();for(let k=0;k<35;k++){let s=document.createElement('span');s.className='result-spark';s.style.setProperty('--left',Math.random()*100+'%');s.style.setProperty('--size',4+Math.random()*6+'px');s.style.setProperty('--spark',good?'#f5d09b':'#aca0d9');s.style.setProperty('--duration',2+Math.random()*2+'s');s.style.setProperty('--delay',-Math.random()*3+'s');s.style.setProperty('--rotate',Math.random()*360+'deg');s.style.setProperty('--drift',(Math.random()-.5)*150+'px');$('resultParticles').appendChild(s)}sound(good?650:160);vibrate([55,65,120]);render()}
+function banner(kind,actor,detail){const e=$('abilityBanner');$('abilityActor').textContent=(modeForMatch==='cpu'&&actor===2?'CPU':'プレイヤー'+actor)+'が発動！';$('abilityIcon').textContent=powerIcons[kind];$('abilityTitle').textContent=powerNames[kind];$('abilityDetail').textContent=detail;e.classList.add('show');clearTimeout(abilityTimer);abilityTimer=setTimeout(()=>{e.classList.remove('show');scheduleCPU()},1800)}
+function reveal(kind,who){const o=$('reveal');$('revealIcon').textContent=powerIcons[kind];$('revealTitle').textContent=powerNames[kind]+' 獲得！';$('revealDesc').textContent=(modeForMatch==='cpu'&&who===2?'CPU':'プレイヤー'+who)+'が特殊能力を獲得しました';o.classList.add('show');clearTimeout(revealTimer);revealTimer=setTimeout(closeReveal,2100);sound(610)}
+function closeReveal(){$('reveal').classList.remove('show');clearTimeout(revealTimer);scheduleCPU()};$('revealClose').onclick=closeReveal;$('reveal').onclick=e=>{if(e.target===$('reveal'))closeReveal()};
+function finishTurn(previous,info){seals=seals.filter(s=>{if(s.owner===previous)s.remaining--;return s.remaining>0});turn=3-turn;stage='choose';selected=null;clearStallingSeals();if(candidates().length===0){render(info);result(false)}else{render(info);scheduleCPU()}}
+function take(i,j){if(gameFinished||locked||stage!=='choose'||cpu())return;const c=candidateFor(i,j);if(!c){collapse(i,j);return}startExtraction(i,j,c)}
+function startExtraction(i,j,c){recordHistory();const who=turn,removed=removeBoard(rows,i,j);locked=true;stage='extract';selected=null;sound(220);vibrate(20);render('ブロックを引き抜いています…');const t=++token;setTimeout(()=>{if(t!==token)return;rows=removed;locked=false;stage='place';pending={i,j,who};let power=mysteries[key(i,j)];if(power){delete mysteries[key(i,j)];powers[who-1].push(power);mysteriesTaken[who-1]++;reveal(power,who)}showPlaces(c.placements);render('最上段の配置位置を選んでください');if(cpu())scheduleCPU()},300)}
+function showPlaces(places){const p=$('placementPanel');p.style.display='block';$('placementButtons').replaceChildren();for(let j of possiblePlaces(rows)){const b=document.createElement('button');b.textContent=j===-1?'場外へ除去':(j+1)+'番';b.style.cssText='flex:1;min-width:0;background:#c69b68;border:0;border-radius:9px;padding:12px 4px;color:#231a17;font-weight:bold';b.onclick=()=>place(j);$('placementButtons').appendChild(b)}}
+function place(p){if(gameFinished||locked||stage!=='place'||cpu())return;doPlace(p)}
+function doPlace(p){if(gameFinished||locked||stage!=='place')return;let after=addBoard(rows,p),who=turn;rows=after;$('placementPanel').style.display='none';stage='choose';pending=null;steps++;sound(350);vibrate(25);if(!stable(after)){collapseVisual('置いた位置でバランスを崩した！');return}if(doubleRemaining>0){doubleRemaining--;clearStallingSeals();if(doubleRemaining>0&&candidates().length>0){render('⚡連続：残り'+doubleRemaining+'回');scheduleCPU();return}doubleRemaining=0}finishTurn(who,(who===2&&modeForMatch==='cpu'?'CPU':'プレイヤー'+who)+'が配置した')}
+function collapse(i,j){if(gameFinished||locked||stage!=='choose'||!rows[i]||!rows[i][j]||i===rows.length-1||blocked(i,j))return;recordHistory();rows[i][j]=0;steps++;collapseVisual('抜き取り後にバランスを崩した！')}
+function collapseVisual(message){locked=true;stage='collapse';render(message);const els=Array.from(svg.querySelectorAll('.piece'));els.forEach((el,k)=>{el.style.setProperty('--fall-x',((k%N)-(N-1)/2)*55+(Math.random()-.5)*80+'px');el.style.setProperty('--fall-y',(150+(k%12)*12+Math.random()*95)+'px');el.style.setProperty('--fall-rot',((Math.random()-.5)*170)+'deg');el.style.animationDelay=(Math.random()*.2)+'s';el.classList.add('falling')});$('stage').classList.add('collapsing');sound(120);const t=++token;setTimeout(()=>{if(t!==token)return;collapseFinished=true;svg.replaceChildren();svg.style.visibility='hidden';$('stage').classList.add('collapse-finished');$('stage').classList.remove('collapsing');locked=false;result(true)},1700)}
+function useSeal(i,j){if(!sealMode||!powers[turn-1].includes('seal')||stage!=='choose')return;recordHistory();const who=turn,targets=sealTargets(i,j);powers[who-1].splice(powers[who-1].indexOf('seal'),1);abilitiesUsed[who-1]++;seals.push({owner:who,remaining:3,targets});sealMode=false;sealPreview=[];banner('seal',who,targets.length+'本を封印');sound(190);finishTurn(who,'🔒 '+targets.length+'本を封印した')}
+function useDouble(){if(stage!=='choose'||!powers[turn-1].includes('double')||candidates().length<3)return;recordHistory();powers[turn-1].splice(powers[turn-1].indexOf('double'),1);abilitiesUsed[turn-1]++;doubleRemaining=2;banner('double',turn,'この手番で2本抜き取る');render('⚡連続発動');scheduleCPU()}
+function useCap(){if(stage!=='choose'||cap!==null||!powers[turn-1].includes('cap'))return;recordHistory();powers[turn-1].splice(powers[turn-1].indexOf('cap'),1);abilitiesUsed[turn-1]++;cap=rows.length+3;banner('cap',turn,'上限'+cap+'段、手番は継続');render('📏上限を'+cap+'段に設定');scheduleCPU()}
+$('useSeal').onclick=()=>{if(!cpu()&&powers[turn-1].includes('seal')){sealMode=true;selected=null;render('封印の中心を選択')}};$('useDouble').onclick=()=>{if(!cpu())useDouble()};$('useCap').onclick=()=>{if(!cpu())useCap()};$('cancelPower').onclick=()=>{sealMode=false;sealPreview=[];selected=null;render()};
+// CPU evaluates complete removal+placement combinations and a short reply horizon.
+function legalOptions(){const out=[];for(const c of candidates())for(const p of c.placements)out.push({i:c.i,j:c.j,p});return out}
+function boardAfterOption(o){return addBoard(removeBoard(rows,o.i,o.j),o.p)}
+function evaluate(o){const after=boardAfterOption(o),saved=rows;rows=after;const n=candidates().reduce((s,c)=>s+c.placements.length,0);rows=saved;let sc=n===0?100000:-n*1.7+(mysteries[key(o.i,o.j)]?18:0);if(levelForMatch==='hard'){let future=0;const opts=legalOptions(),sample=opts.slice(0,12); // Restore candidate board for reply evaluation.
+ rows=after;const replies=legalOptions();if(replies.length){let minNext=1e9;for(const r of replies.slice(0,14)){const b=boardAfterOption(r);rows=b;const k=legalOptions().length;minNext=Math.min(minNext,k);rows=after}future=-Math.max(0,12-minNext)*.35}rows=saved;sc+=future}return sc}
+function chooseCPU(){const moves=legalOptions();if(!moves.length)return null;if(levelForMatch==='easy')return moves[Math.floor(Math.random()*moves.length)];let best=-Infinity,choice=moves[0];for(const o of moves){const v=evaluate(o)+(Math.random()-.5)*(levelForMatch==='hard'?.15:4);if(v>best){best=v;choice=o}}return choice}
+function scheduleCPU(){clearTimeout(cpuTimer);if(!cpu()||gameFinished||locked||$('reveal').classList.contains('show')||$('abilityBanner').classList.contains('show'))return;const t=token;cpuTimer=setTimeout(()=>{if(t!==token||!cpu()||gameFinished||locked)return;
+ if(stage==='place'){const opts=possiblePlaces(rows);let best=opts[0];let value=-Infinity;for(const p of opts){const after=addBoard(rows,p);let v=stable(after)?100:0;if(stable(after)){let saved=rows;rows=after;v-=legalOptions().length*.05;rows=saved}if(v>value){value=v;best=p}}doPlace(best);return}
+ if(stage!=='choose')return;clearStallingSeals();const moves=legalOptions();if(!moves.length){render();result(false);return}
+ if(special&&powers[1].includes('cap')&&cap===null&&steps>1){useCap();return}
+ if(special&&powers[1].includes('double')&&candidates().length>=3&&candidates().length<=7){useDouble();return}
+ if(special&&powers[1].includes('seal')&&moves.length>3&&Math.random()<.18){const c=candidates()[0];sealMode=true;useSeal(c.i,c.j);return}
+ const opt=chooseCPU();if(opt)startExtraction(opt.i,opt.j,candidateFor(opt.i,opt.j))
+ },levelForMatch==='easy'?800:600)}
+function project(x,y,z){const u=x*Math.cos(angle)-y*Math.sin(angle),v=x*Math.sin(angle)+y*Math.cos(angle);return [zoom*35*u,zoom*(14*v-25*z)]}
+function poly(g,pts,cls,fill){let el=document.createElementNS(NS,'polygon');el.setAttribute('points',pts.map(p=>project(...p).map(x=>x.toFixed(2)).join(',')).join(' '));el.setAttribute('class',cls);el.setAttribute('fill',fill);g.appendChild(el)}
+function drawBlock(i,j){const gap=.06,L=N/2,lo=-L+j+gap,hi=-L+j+1-gap,x0=i%2===0?-L+gap:lo,x1=i%2===0?L-gap:hi,y0=i%2===0?lo:-L+gap,y1=i%2===0?hi:L-gap,z0=i*.76,z1=z0+.68;
+ const a=[x0,y0,z1],b=[x1,y0,z1],c=[x1,y1,z1],d=[x0,y1,z1],A=[x0,y0,z0],B=[x1,y0,z0],C=[x1,y1,z0],D=[x0,y1,z0];const g=document.createElementNS(NS,'g'),myst=!!mysteries[key(i,j)],sealed=blocked(i,j),isSel=selected&&selected.i===i&&selected.j===j;g.className.baseVal='piece'+(myst?' mystery':'')+(sealed?' sealed':'')+(isSel?' selected':'')+(sealPreview.includes(key(i,j))?' preview':'');g.setAttribute('data-block',key(i,j));const faces=[{p:[a,b,B,A],n:[0,-1,0],f:'#b88051'},{p:[b,c,C,B],n:[1,0,0],f:'#9d6842'},{p:[c,d,D,C],n:[0,1,0],f:'#b47b4b'},{p:[d,a,A,D],n:[-1,0,0],f:'#a87148'}];let facingBest=-1,markFace=null;for(const f of faces){const facing=f.n[0]*Math.sin(angle)+f.n[1]*Math.cos(angle);if(facing>.001){poly(g,f.p,'front',f.f);if(facing>facingBest){facingBest=facing;markFace=f.p}}}poly(g,[a,b,c,d],'top',sealed?'#7185bd':'#d6af81');if(myst){let p=project((x0+x1)/2,(y0+y1)/2,z1+.02);if(markFace){const f=markFace;let p1=project(...f[0]),p2=project(...f[2]);p=[(p1[0]+p2[0])/2,(p1[1]+p2[1])/2]}const t=document.createElementNS(NS,'text');t.setAttribute('x',p[0]);t.setAttribute('y',p[1]);t.setAttribute('text-anchor','middle');t.setAttribute('dominant-baseline','central');t.setAttribute('class','mystery-mark');t.textContent='?';g.appendChild(t)}if(sealed){let p=project((x0+x1)/2,(y0+y1)/2,z1+.03),t=document.createElementNS(NS,'text');t.setAttribute('x',p[0]);t.setAttribute('y',p[1]);t.setAttribute('text-anchor','middle');t.setAttribute('class','seal-glyph');t.textContent='◆';g.appendChild(t)}
+ g.addEventListener('click',()=>{if(dragged||locked||gameFinished||stage!=='choose'||cpu()||sealed&&!sealMode||i===rows.length-1&&!sealMode)return;if(sealMode){if(selected&&selected.i===i&&selected.j===j){selected=null;useSeal(i,j)}else{selected={i,j};sealPreview=sealTargets(i,j);render('封印範囲を確認し、再タップで発動')}return}if(selected&&selected.i===i&&selected.j===j){selected=null;take(i,j)}else{selected={i,j};render((i+1)+'段目・'+(j+1)+'番を選択。再タップで抜く')}});svg.appendChild(g)}
+function render(message=''){if(!collapseFinished){svg.replaceChildren();const order=[];for(let i=0;i<rows.length;i++)for(let j=0;j<N;j++)if(rows[i][j]){let x=i%2===0?0:j-(N-1)/2,y=i%2===0?j-(N-1)/2:0;order.push({i,j,d:x*Math.sin(angle)+y*Math.cos(angle)})}order.sort((a,b)=>a.i-b.i||a.d-b.d);order.forEach(o=>drawBlock(o.i,o.j));if(cap!==null){const y=project(0,0,(cap-1)*.76+.78)[1],ln=document.createElementNS(NS,'line');ln.setAttribute('x1',-110*zoom);ln.setAttribute('x2',110*zoom);ln.setAttribute('y1',y);ln.setAttribute('y2',y);ln.setAttribute('class','cap-line');svg.appendChild(ln)}}
+ const safe=!locked&&stage==='choose'&&!gameFinished?candidates():[];$('specialPanel').classList.toggle('on',special);$('matchModeBadge').textContent=(special?'✦ SPECIAL':'✦ BALANCE')+' · '+N+' BLOCKS';$('specialInfo').textContent='？残り'+Object.keys(mysteries).length+'本 ／ 高さ上限：'+(cap===null?'なし':cap+'段')+' ／ 封印中：'+seals.length+'件';$('inventory1').textContent=powers[0].map(x=>powerIcons[x]+powerNames[x]).join(' ・ ')||'なし';$('inventory2').textContent=powers[1].map(x=>powerIcons[x]+powerNames[x]).join(' ・ ')||'なし';$('invLabel2').textContent=modeForMatch==='cpu'?'CPUの能力':'プレイヤー2の能力';$('useSeal').disabled=locked||cpu()||!powers[turn-1].includes('seal')||gameFinished;$('useDouble').disabled=locked||cpu()||!powers[turn-1].includes('double')||safe.length<3||gameFinished;$('useCap').disabled=locked||cpu()||!powers[turn-1].includes('cap')||cap!==null||gameFinished;$('cancelPower').style.display=sealMode?'':'none';$('powerHint').textContent=sealMode?'封印範囲を確認して同じブロックをもう一度タップ':'封印は抜き取り禁止のみ。連続は安全な抜き取り候補3本以上で発動可能';$('turn').textContent=gameFinished?'対局終了':cpu()?'CPUの番':modeForMatch==='cpu'?'あなたの番':'プレイヤー'+turn;$('count').textContent=steps;$('floors').textContent=rows.length;$('legal').textContent=safe.length;$('full').textContent=rows.slice(0,-1).filter(filled).length;$('pairs').textContent=rows.slice(0,-1).filter(r=>bits(r)>0&&!filled(r)).length;$('undo').disabled=!history.length||locked;$('last').textContent=message||'重心と支持を考えてブロックを抜こう';$('note').textContent=gameFinished?'勝敗が決まりました':stage==='place'?'配置先を選んでください':sealMode?'封印範囲をプレビュー、再タップで発動':'タップで選択 → 再タップで抜く。抜いた後は配置先を選択';const h=rows.length,view=Math.max(235,25*(h-1)*.76+120),top=-zoom*(25*(h-1)*.76)/2-view/2+9*zoom;svg.setAttribute('viewBox','-155 '+top+' 310 '+view);svg.style.height=Math.max(285,Math.min(510,245+h*15))+'px'}
+function updateLayers(){const current=Number($('startLayers').value)||4,limits={3:6,4:5,5:4},max=limits[Number($('blocksPerLayer').value)];$('startLayers').replaceChildren();for(let i=3;i<=max;i++){const o=document.createElement('option');o.value=i;o.textContent=i+'段（'+(i*Number($('blocksPerLayer').value))+'本）';$('startLayers').appendChild(o)}$('startLayers').value=Math.min(max,Math.max(3,current))}
+function newGame(){++token;clearTimeout(cpuTimer);clearTimeout(revealTimer);clearTimeout(abilityTimer);N=Number($('blocksPerLayer').value);modeForMatch=$('playMode').value;levelForMatch=$('cpuLevel').value;special=$('ruleMode').value==='special';const layers=Number($('startLayers').value);rows=Array.from({length:layers},()=>Array(N).fill(1));turn=1;steps=0;stage='choose';pending=null;selected=null;sealMode=false;sealPreview=[];powers=[[],[]];seals=[];cap=null;doubleRemaining=0;history=[];abilitiesUsed=[0,0];mysteriesTaken=[0,0];mysteries={};gameFinished=false;collapseFinished=false;recorded=false;locked=false;svg.style.visibility='';$('stage').classList.remove('collapse-finished','collapsing');$('resultOverlay').className='result-overlay';$('abilityBanner').classList.remove('show');$('reveal').classList.remove('show');$('placementPanel').style.display='none';if(special){const n=layers*N,mcount=n<15?2:4,spots=[];for(let i=0;i<layers-1;i++)for(let j=0;j<N;j++)spots.push([i,j]);spots.sort(()=>Math.random()-.5);let kinds=['seal','double','cap'].sort(()=>Math.random()-.5);if(mcount===2)kinds=kinds.slice(0,2);else kinds.push(kinds[Math.floor(Math.random()*3)]);kinds.sort(()=>Math.random()-.5);for(let k=0;k<mcount;k++)mysteries[key(...spots[k])]=kinds[k]}
+ clearStallingSeals();render(N+'本×'+layers+'段で対局開始！');scheduleCPU()}
+$('blocksPerLayer').onchange=()=>{updateLayers();newGame()};$('startLayers').onchange=newGame;$('ruleMode').onchange=newGame;$('playMode').onchange=()=>{$('cpuLabel').style.display=$('cpuLevel').style.display=$('playMode').value==='cpu'?'':'none';newGame()};$('cpuLevel').onchange=newGame;$('newGame').onclick=newGame;$('reset').onclick=newGame;
+$('undo').onclick=()=>{if(locked||!history.length)return;++token;clearTimeout(cpuTimer);$('resultOverlay').className='result-overlay';recorded=false;const db=readRecords();if(db.matches.length&&gameFinished){db.matches.pop();writeRecords(db)}restore(history.pop());svg.style.visibility='';$('stage').classList.remove('collapse-finished','collapsing');$('placementPanel').style.display=stage==='place'?'block':'none';if(stage==='place')showPlaces(possiblePlaces(rows));render('1手戻しました');scheduleCPU()};
+$('zoomin').onclick=()=>{zoom=Math.min(2.6,zoom*1.2);render()};$('zoomout').onclick=()=>{zoom=Math.max(.65,zoom/1.2);render()};$('viewreset').onclick=()=>{zoom=1;angle=Math.PI/4;render()};let pin=null;svg.addEventListener('pointerdown',e=>{active[e.pointerId]={x:e.clientX,y:e.clientY};if(Object.keys(active).length===1){gesture={x:e.clientX,y:e.clientY,a:angle};dragged=false}svg.setPointerCapture?.(e.pointerId)});svg.addEventListener('pointermove',e=>{if(!active[e.pointerId])return;active[e.pointerId]={x:e.clientX,y:e.clientY};const v=Object.values(active);if(v.length>1){let dist=Math.hypot(v[0].x-v[1].x,v[0].y-v[1].y);if(!pin)pin={dist,zoom};dragged=true;zoom=Math.max(.65,Math.min(2.6,pin.zoom*dist/Math.max(1,pin.dist)));render()}else if(gesture){let dx=e.clientX-gesture.x;if(Math.abs(dx)>6||Math.abs(e.clientY-gesture.y)>8)dragged=true;if(dragged){angle=gesture.a+dx*.012;selected=null;render()}}});function endPointer(e){delete active[e.pointerId];pin=null;gesture=null;setTimeout(()=>dragged=false,90)}svg.addEventListener('pointerup',endPointer);svg.addEventListener('pointercancel',endPointer);
+updateLayers();$('startLayers').value='4';newGame();
 })();
-</script><script>if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(err => console.warn('Offline unavailable:',err))); }</script></body></html>
+</script><script>if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));</script></body></html>
